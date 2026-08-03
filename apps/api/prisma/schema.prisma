@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADVISOR
+  FRANCHISE_ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id             String     @id @default(uuid())
+  email          String     @unique
+  passwordHash   String
+  fullName       String
+  phone          String?
+  role           Role       @default(ADVISOR)
+  franchiseId    String?
+  franchise      Franchise? @relation("FranchiseMembers", fields: [franchiseId], references: [id])
+  ownedFranchise Franchise? @relation("FranchiseOwner")
+  invitesCreated Invite[]
+  createdAt      DateTime   @default(now())
+
+  @@map("users")
+}
+
+model Franchise {
+  id          String   @id @default(uuid())
+  name        String
+  ownerUserId String   @unique
+  owner       User     @relation("FranchiseOwner", fields: [ownerUserId], references: [id])
+  members     User[]   @relation("FranchiseMembers")
+  invites     Invite[]
+  createdAt   DateTime @default(now())
+
+  @@map("franchises")
+}
+
+/// Invitacion a un asesor para sumarse a una franquicia. Se comparte como
+/// link fuera del sistema (WhatsApp, etc.) porque todavia no hay proveedor
+/// de email configurado.
+model Invite {
+  id          String    @id @default(uuid())
+  token       String    @unique
+  franchiseId String
+  franchise   Franchise @relation(fields: [franchiseId], references: [id])
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@map("invites")
+}

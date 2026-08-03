@@ -2,7 +2,7 @@
 
 Plataforma inmobiliaria multi-rol para **Muller Producciones** (fotografía y video con drone para propiedades). Portal donde compradores/inquilinos buscan propiedades, asesores inmobiliarios las publican tras comprar un paquete de producción, y franquicias gestionan equipos de asesores.
 
-> Estado: en fase de diseño (specs y modelo de datos cerrados). Todavía sin código de aplicación.
+> Estado: módulo de autenticación y roles en desarrollo.
 
 ## Roles
 
@@ -18,6 +18,17 @@ Plataforma inmobiliaria multi-rol para **Muller Producciones** (fotografía y vi
 - **DB**: PostgreSQL (Docker Compose en local)
 - **Storage**: Cloudflare R2 (API S3) para fotos/video
 - **Infra**: monorepo con npm workspaces
+
+## Correr el backend en local
+
+```bash
+docker compose -f infra/docker-compose.yml up -d   # Postgres
+cd apps/api
+cp .env.example .env
+npm install
+npm run prisma:migrate   # crea las tablas (primera vez, pide nombre de migracion)
+npm run start:dev
+```
 
 ## Metodología
 
