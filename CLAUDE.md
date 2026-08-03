@@ -20,7 +20,7 @@ Plataforma inmobiliaria multi-rol para Muller Producciones (fotografía/video co
 ## Stack
 
 - Monorepo con npm workspaces (`apps/*`, `packages/*`) — sin Nx/Turborepo hasta que haga falta.
-- Backend: Node.js + Express + TypeScript (no Nest: RBAC de 3 roles no justifica la ceremonia de DI; arquitectura hexagonal vía carpetas `modules/<dominio>/{routes,use-cases,repository}`).
+- Backend: Node.js + NestJS + TypeScript. Decisión confirmada con Marthin: dado el objetivo de escalar a plataforma grande (no solo el MVP), los guards/decorators de Nest (`@Roles()`, `RolesGuard`) resuelven el RBAC de 3 roles con menos boilerplate que middlewares a mano en Express, y la estructura de módulos calza con Clean/Hexagonal Architecture sin armarla manualmente.
 - Frontend: Next.js + TypeScript (SEO real para fichas de propiedad + optimización de imágenes/video de drone).
 - DB: PostgreSQL (Docker Compose en local).
 - Storage: Cloudflare R2 (API S3) para fotos/video del "locker" de cada asesor.
