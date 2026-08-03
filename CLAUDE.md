@@ -57,4 +57,9 @@ Plazos: MVP 1 mes, proyecto completo 3 meses.
 - Estructura de repo y tooling (git, npm workspaces, release-please, devsecops) creados.
 - CodeQL pausado en devsecops.yml: falla si no hay código JS/TS que indexar. Reactivar cuando exista código real en apps/api o apps/web.
 - Modelo de datos cerrado (cupo de franquicia confirmado como compartido).
-- Próximo paso: spec (Gentle-AI/openspec) del módulo de auth y roles.
+- Spec de auth/roles aprobada (openspec/changes/auth-roles/spec.md).
+- Backend: NestJS scaffolding en `apps/api` + Prisma (User, Franchise, Invite) + módulo de auth (register/login/logout/me, invitación de asesor por link, guards de sesión y de rol).
+- Extensión sobre el modelo cerrado: tabla `invites` (no estaba en el modelo original) — la invitación de asesor a franquicia es por link compartido a mano, no por email, porque no hay proveedor de email elegido.
+- Pendiente: no se generó la migración inicial de Prisma en este entorno (sin Docker disponible) — Marthin corre `npm run prisma:migrate` la primera vez.
+- Diferido a cuando exista el módulo de paquetes: la promoción automática de un asesor a `franchise_admin` (la lógica va del lado de packages, no de auth, cuando se apruebe una compra multi-asesor).
+- Próximo paso: levantar Postgres local, correr la migración, probar el flujo de auth end to end. Después, spec del módulo de paquetes.
