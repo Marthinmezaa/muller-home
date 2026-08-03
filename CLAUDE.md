@@ -42,7 +42,7 @@ Reglas clave:
 - Paquetes: `billing_type` (`one_time` | `monthly`). `one_time` = 1 propiedad. `monthly` = 5 propiedades + 5 producciones.
 - Sin motor de suscripción/renovación automática en Fase 1 (aprobación manual por transferencia): "mensual" es comprar de nuevo cada mes → nueva fila en `package_purchases` con su propio cupo.
 - `productions_quota` es dato comercial sin tabla de seguimiento (coordinación de producción Fase 1 = link a WhatsApp, sin agenda en el sistema).
-- **Supuesto sin confirmar con Marthin:** en franquicia, el cupo de `properties_quota` es compartido por todo el equipo desde la compra del Admin de Franquicia (cada propiedad de cualquier asesor del equipo descuenta del mismo `package_purchase`). Pendiente de confirmación — si cada asesor necesita paquete propio, hay que separar el cupo por asesor.
+- **Confirmado con Marthin:** en franquicia, el cupo de `properties_quota` es compartido por todo el equipo desde la compra del Admin de Franquicia (cada propiedad de cualquier asesor del equipo descuenta del mismo `package_purchase`).
 
 ## Alcance Fase 1 (MVP, 1 mes)
 
@@ -56,5 +56,5 @@ Plazos: MVP 1 mes, proyecto completo 3 meses.
 
 - Estructura de repo y tooling (git, npm workspaces, release-please, devsecops) creados.
 - CodeQL pausado en devsecops.yml: falla si no hay código JS/TS que indexar. Reactivar cuando exista código real en apps/api o apps/web.
-- Modelo de datos en borrador, pendiente confirmación del punto de cupo compartido en franquicias.
+- Modelo de datos cerrado (cupo de franquicia confirmado como compartido).
 - Próximo paso: spec (Gentle-AI/openspec) del módulo de auth y roles.
