@@ -55,5 +55,6 @@ Plazos: MVP 1 mes, proyecto completo 3 meses.
 ## Estado actual
 
 - Estructura de repo y tooling (git, npm workspaces, release-please, devsecops) creados.
+- CodeQL pausado en devsecops.yml: falla si no hay código JS/TS que indexar. Reactivar cuando exista código real en apps/api o apps/web.
 - Modelo de datos en borrador, pendiente confirmación del punto de cupo compartido en franquicias.
 - Próximo paso: spec (Gentle-AI/openspec) del módulo de auth y roles.

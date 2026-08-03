@@ -6,20 +6,9 @@ on:
   push:
     branches: [main]
 
+# ponytail: CodeQL fuera hasta que exista código JS/TS real (falla si no hay
+# nada que indexar). Volver a agregar el job cuando arranque apps/api o apps/web.
 jobs:
-  codeql:
-    name: CodeQL Analysis
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
-        with:
-          languages: javascript-typescript
-      - uses: github/codeql-action/analyze@v3
-
   secrets-scan:
     name: Secret Scanning (gitleaks)
     runs-on: ubuntu-latest
