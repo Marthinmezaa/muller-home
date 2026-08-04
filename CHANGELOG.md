@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.2.0...muller-home-v0.3.0) (2026-08-04)
+
+
+### Features
+
+* modulo de paquetes con storage en R2 ([3bea738](https://github.com/Marthinmezaa/muller-home/commit/3bea738606877c1ce18b192dbe6634eea52f3a04))
+
 ## [0.2.0](https://github.com/Marthinmezaa/muller/compare/muller-home-v0.1.1...muller-home-v0.2.0) (2026-08-03)
 
 
