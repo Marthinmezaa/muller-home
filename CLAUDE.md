@@ -15,7 +15,7 @@ Plataforma inmobiliaria multi-rol para Muller Producciones (fotografía/video co
 - Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`...) con la **descripción en castellano** (el tipo se mantiene en inglés porque release-please lo parsea).
 - release-please (`.github/workflows/release-please.yml`) versiona automáticamente a partir de los commits.
 - devsecops.yml: CodeQL + secret scanning (gitleaks) en cada push/PR a `main`.
-- Repo remoto: https://github.com/Marthinmezaa/muller.git
+- Repo remoto: https://github.com/Marthinmezaa/muller-home.git
 
 ## Stack
 
