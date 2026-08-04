@@ -15,14 +15,14 @@ Plataforma inmobiliaria multi-rol para Muller Producciones (fotografía/video co
 - Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`...) con la **descripción en castellano** (el tipo se mantiene en inglés porque release-please lo parsea).
 - release-please (`.github/workflows/release-please.yml`) versiona automáticamente a partir de los commits.
 - devsecops.yml: CodeQL + secret scanning (gitleaks) en cada push/PR a `main`.
-- Repo remoto: https://github.com/Marthinmezaa/muller.git
+- Repo remoto: https://github.com/Marthinmezaa/muller-home.git
 
 ## Stack
 
 - Monorepo con npm workspaces (`apps/*`, `packages/*`) — sin Nx/Turborepo hasta que haga falta.
 - Backend: Node.js + NestJS + TypeScript. Decisión confirmada con Marthin: dado el objetivo de escalar a plataforma grande (no solo el MVP), los guards/decorators de Nest (`@Roles()`, `RolesGuard`) resuelven el RBAC de 3 roles con menos boilerplate que middlewares a mano en Express, y la estructura de módulos calza con Clean/Hexagonal Architecture sin armarla manualmente.
 - Frontend: Next.js + TypeScript (SEO real para fichas de propiedad + optimización de imágenes/video de drone).
-- DB: PostgreSQL (Docker Compose en local).
+- DB: PostgreSQL. Dev: Neon (serverless, sin Docker). `infra/docker-compose.yml` queda como alternativa local si hace falta. Producción: Postgres propio en el VPS.
 - Storage: Cloudflare R2 (API S3) para fotos/video del "locker" de cada asesor.
 - Infra producción (futuro): VPS Hostinger, plan KVM 2.
 
@@ -60,6 +60,7 @@ Plazos: MVP 1 mes, proyecto completo 3 meses.
 - Spec de auth/roles aprobada (openspec/changes/auth-roles/spec.md).
 - Backend: NestJS scaffolding en `apps/api` + Prisma (User, Franchise, Invite) + módulo de auth (register/login/logout/me, invitación de asesor por link, guards de sesión y de rol).
 - Extensión sobre el modelo cerrado: tabla `invites` (no estaba en el modelo original) — la invitación de asesor a franquicia es por link compartido a mano, no por email, porque no hay proveedor de email elegido.
-- Pendiente: no se generó la migración inicial de Prisma en este entorno (sin Docker disponible) — Marthin corre `npm run prisma:migrate` la primera vez.
+- Decisión confirmada con Marthin: DB de desarrollo en Neon (Postgres serverless) en vez de Docker local, porque este entorno no tiene Docker disponible y Neon desbloquea la migración inicial sin instalar nada.
+- Pendiente: Marthin crea el proyecto en Neon, completa `apps/api/.env` con la connection string, y corre `npm run prisma:migrate` la primera vez.
 - Diferido a cuando exista el módulo de paquetes: la promoción automática de un asesor a `franchise_admin` (la lógica va del lado de packages, no de auth, cuando se apruebe una compra multi-asesor).
 - Próximo paso: levantar Postgres local, correr la migración, probar el flujo de auth end to end. Después, spec del módulo de paquetes.
