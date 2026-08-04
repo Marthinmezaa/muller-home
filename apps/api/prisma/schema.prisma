@@ -13,18 +13,31 @@ enum Role {
   SUPER_ADMIN
 }
 
+enum BillingType {
+  ONE_TIME
+  MONTHLY
+}
+
+enum PurchaseStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
-  id             String     @id @default(uuid())
-  email          String     @unique
-  passwordHash   String
-  fullName       String
-  phone          String?
-  role           Role       @default(ADVISOR)
-  franchiseId    String?
-  franchise      Franchise? @relation("FranchiseMembers", fields: [franchiseId], references: [id])
-  ownedFranchise Franchise? @relation("FranchiseOwner")
-  invitesCreated Invite[]
-  createdAt      DateTime   @default(now())
+  id                String            @id @default(uuid())
+  email             String            @unique
+  passwordHash      String
+  fullName          String
+  phone             String?
+  role              Role              @default(ADVISOR)
+  franchiseId       String?
+  franchise         Franchise?        @relation("FranchiseMembers", fields: [franchiseId], references: [id])
+  ownedFranchise    Franchise?        @relation("FranchiseOwner")
+  invitesCreated    Invite[]
+  purchases         PackagePurchase[] @relation("PurchaseBuyer")
+  reviewedPurchases PackagePurchase[] @relation("PurchaseReviewer")
+  createdAt         DateTime          @default(now())
 
   @@map("users")
 }
@@ -56,4 +69,45 @@ model Invite {
   createdAt   DateTime  @default(now())
 
   @@map("invites")
+}
+
+model Package {
+  id               String            @id @default(uuid())
+  name             String
+  billingType      BillingType
+  price            Decimal           @db.Decimal(10, 2)
+  propertiesQuota  Int
+  /// Dato comercial mostrado en el panel; sin tabla de seguimiento ni
+  /// descuento automatico en Fase 1 (coordinacion de produccion sigue
+  /// siendo el link a WhatsApp).
+  productionsQuota Int
+  maxAdvisors      Int               @default(1)
+  active           Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  purchases        PackagePurchase[]
+
+  @@map("packages")
+}
+
+model PackagePurchase {
+  id              String         @id @default(uuid())
+  packageId       String
+  package         Package        @relation(fields: [packageId], references: [id])
+  buyerId         String
+  buyer           User           @relation("PurchaseBuyer", fields: [buyerId], references: [id])
+  status          PurchaseStatus @default(PENDING)
+  /// Snapshot del cupo del Package al momento de la compra: ediciones
+  /// posteriores al catalogo nunca afectan retroactivamente una compra
+  /// ya aprobada.
+  propertiesQuota Int
+  propertiesUsed  Int            @default(0)
+  /// Object key en R2, no URL publica: el comprobante es sensible, el
+  /// bucket es privado y se sirve via URL prefirmada de corta duracion.
+  proofKey        String
+  reviewedById    String?
+  reviewedBy      User?          @relation("PurchaseReviewer", fields: [reviewedById], references: [id])
+  reviewedAt      DateTime?
+  createdAt       DateTime       @default(now())
+
+  @@map("package_purchases")
 }
