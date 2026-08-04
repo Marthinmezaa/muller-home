@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/Marthinmezaa/muller/compare/muller-home-v0.1.1...muller-home-v0.2.0) (2026-08-03)
+
+
+### Features
+
+* implementa modulo de autenticacion y roles ([fe75639](https://github.com/Marthinmezaa/muller/commit/fe75639bfd6a886797b15a230af88884c8bc907e))
+* implementa modulo de autenticacion y roles ([a131dcc](https://github.com/Marthinmezaa/muller/commit/a131dccc70ca4d3c9034e55947da48377d3d95df))
+
 ## [0.1.1](https://github.com/Marthinmezaa/muller/compare/muller-home-v0.1.0...muller-home-v0.1.1) (2026-08-03)
 
 
