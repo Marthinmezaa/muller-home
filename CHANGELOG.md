@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.4.0...muller-home-v0.5.0) (2026-08-05)
+
+
+### Features
+
+* módulo de propiedades (service/controller/DTOs) ([3ba7a2b](https://github.com/Marthinmezaa/muller-home/commit/3ba7a2b4ad8cdeddea1144b9fe422f83dab04c5d))
+* módulo de propiedades (service/controller/DTOs) ([39b61ea](https://github.com/Marthinmezaa/muller-home/commit/39b61eac7c6209e30f19798f6811e328cdfc58a7))
+
 ## [0.4.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.3.0...muller-home-v0.4.0) (2026-08-05)
 
 
