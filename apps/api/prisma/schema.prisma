@@ -24,20 +24,49 @@ enum PurchaseStatus {
   REJECTED
 }
 
+enum OperationType {
+  SALE
+  RENT
+}
+
+enum PropertyType {
+  HOUSE
+  APARTMENT
+  LAND
+  COMMERCIAL_LOCAL
+  OFFICE
+}
+
+enum PropertyStatus {
+  DRAFT
+  PUBLISHED
+  PAUSED
+  SOLD
+  RENTED
+}
+
+enum MediaType {
+  PHOTO
+  VIDEO
+}
+
 model User {
-  id                String            @id @default(uuid())
-  email             String            @unique
+  id                String                    @id @default(uuid())
+  email             String                    @unique
   passwordHash      String
   fullName          String
   phone             String?
-  role              Role              @default(ADVISOR)
+  role              Role                      @default(ADVISOR)
   franchiseId       String?
-  franchise         Franchise?        @relation("FranchiseMembers", fields: [franchiseId], references: [id])
-  ownedFranchise    Franchise?        @relation("FranchiseOwner")
+  franchise         Franchise?                @relation("FranchiseMembers", fields: [franchiseId], references: [id])
+  ownedFranchise    Franchise?                @relation("FranchiseOwner")
   invitesCreated    Invite[]
-  purchases         PackagePurchase[] @relation("PurchaseBuyer")
-  reviewedPurchases PackagePurchase[] @relation("PurchaseReviewer")
-  createdAt         DateTime          @default(now())
+  purchases         PackagePurchase[]         @relation("PurchaseBuyer")
+  reviewedPurchases PackagePurchase[]         @relation("PurchaseReviewer")
+  properties        Property[]                @relation("PropertyOwner")
+  deletionRequests  PropertyDeletionRequest[] @relation("DeletionRequester")
+  reviewedDeletions PropertyDeletionRequest[] @relation("DeletionReviewer")
+  createdAt         DateTime                  @default(now())
 
   @@map("users")
 }
@@ -110,4 +139,66 @@ model PackagePurchase {
   createdAt       DateTime       @default(now())
 
   @@map("package_purchases")
+}
+
+model Property {
+  id               String                    @id @default(uuid())
+  title            String
+  description      String
+  operationType    OperationType
+  propertyType     PropertyType
+  price            Decimal                   @db.Decimal(12, 2)
+  areaM2           Decimal                   @db.Decimal(8, 2)
+  rooms            Int
+  bathrooms        Int
+  address          String
+  city             String
+  lat              Decimal                   @db.Decimal(9, 6)
+  lng              Decimal                   @db.Decimal(9, 6)
+  status           PropertyStatus            @default(DRAFT)
+  /// Fecha en la que se marco sold/rented. Junto con la ventana de
+  /// retencion (configurable, default 30 dias) define hasta cuando sigue
+  /// visible en el buscador publico para seguir generando trafico.
+  closedAt         DateTime?
+  ownerId          String
+  owner            User                      @relation("PropertyOwner", fields: [ownerId], references: [id])
+  media            PropertyMedia[]
+  deletionRequests PropertyDeletionRequest[]
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+
+  @@map("properties")
+}
+
+model PropertyMedia {
+  id         String    @id @default(uuid())
+  propertyId String
+  property   Property  @relation(fields: [propertyId], references: [id])
+  type       MediaType
+  /// Object key en R2, mismo bucket/patron que el comprobante de pago.
+  key        String
+  order      Int       @default(0)
+  isCover    Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+
+  @@map("property_media")
+}
+
+/// Baja de una propiedad: el asesor dueno no elimina directo, pide la baja
+/// y un franchise_admin/super_admin la aprueba (borra) o rechaza. Mismo
+/// flujo pending/approved/rejected que PackagePurchase; el aviso de la
+/// solicitud es manual (WhatsApp), no hay notificacion automatica en Fase 1.
+model PropertyDeletionRequest {
+  id            String         @id @default(uuid())
+  propertyId    String
+  property      Property       @relation(fields: [propertyId], references: [id])
+  requestedById String
+  requestedBy   User           @relation("DeletionRequester", fields: [requestedById], references: [id])
+  status        PurchaseStatus @default(PENDING)
+  reviewedById  String?
+  reviewedBy    User?          @relation("DeletionReviewer", fields: [reviewedById], references: [id])
+  reviewedAt    DateTime?
+  createdAt     DateTime       @default(now())
+
+  @@map("property_deletion_requests")
 }
