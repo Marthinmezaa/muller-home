@@ -44,6 +44,14 @@ Reglas clave:
 - `productions_quota` es dato comercial sin tabla de seguimiento (coordinación de producción Fase 1 = link a WhatsApp, sin agenda en el sistema).
 - **Confirmado con Marthin:** en franquicia, el cupo de `properties_quota` es compartido por todo el equipo desde la compra del Admin de Franquicia (cada propiedad de cualquier asesor del equipo descuenta del mismo `package_purchase`).
 
+## Identidad visual (provisoria)
+
+Marca actual de Muller Producciones — base para Muller Home hasta que se defina la identidad visual definitiva (Fase 2). Assets en `docs/brand/`.
+
+- Logo: búho (`docs/brand/logo.jpeg`), líneas navy sobre blanco, ojos amarillos.
+- Paleta (aproximada a partir de `docs/brand/paleta-referencia.jpeg`, pedir el código exacto si hace falta pixel-perfect): gris claro `#F2F2F2`, amarillo/dorado `#F5C518`, negro `#1A1A1A`, azul navy `#3B3A72`.
+- Tipografía del isotipo: sans-serif redondeada.
+
 ## Alcance Fase 1 (MVP, 1 mes)
 
 Portal público (buscador/filtros/mapa/ficha/contacto), auth + roles, módulo de paquetes (compra → comprobante → aprobación manual → habilita publicación), panel Asesor, panel Admin Franquicia, panel Super Admin, CRM básico (leads + vistas). Coordinación de producción: solo link a WhatsApp.
@@ -57,10 +65,16 @@ Plazos: MVP 1 mes, proyecto completo 3 meses.
 - Estructura de repo y tooling (git, npm workspaces, release-please, devsecops) creados.
 - CodeQL pausado en devsecops.yml: falla si no hay código JS/TS que indexar. Reactivar cuando exista código real en apps/api o apps/web.
 - Modelo de datos cerrado (cupo de franquicia confirmado como compartido).
-- Spec de auth/roles aprobada (openspec/changes/auth-roles/spec.md).
-- Backend: NestJS scaffolding en `apps/api` + Prisma (User, Franchise, Invite) + módulo de auth (register/login/logout/me, invitación de asesor por link, guards de sesión y de rol).
+- Spec de auth/roles aprobada y **implementada** (openspec/changes/auth-roles/spec.md): módulo de auth completo (register/login/logout/me, invitación de asesor por link, guards de sesión y de rol).
+- Spec de paquetes aprobada y **implementada** (openspec/changes/packages/spec.md, PR #9, release 0.3.0): catálogo de paquetes, compra con comprobante a R2, aprobación/rechazo manual de Super Admin, promoción automática a `franchise_admin` en compra multi-asesor, cálculo y consumo de cupo FIFO (`consumeQuota` en `packages.service.ts`, con guarda optimista contra carreras) — queda lista para que el futuro módulo de propiedades la llame al publicar.
 - Extensión sobre el modelo cerrado: tabla `invites` (no estaba en el modelo original) — la invitación de asesor a franquicia es por link compartido a mano, no por email, porque no hay proveedor de email elegido.
-- Decisión confirmada con Marthin: DB de desarrollo en Neon (Postgres serverless) en vez de Docker local, porque este entorno no tiene Docker disponible y Neon desbloquea la migración inicial sin instalar nada.
-- Pendiente: Marthin crea el proyecto en Neon, completa `apps/api/.env` con la connection string, y corre `npm run prisma:migrate` la primera vez.
-- Diferido a cuando exista el módulo de paquetes: la promoción automática de un asesor a `franchise_admin` (la lógica va del lado de packages, no de auth, cuando se apruebe una compra multi-asesor).
-- Próximo paso: levantar Postgres local, correr la migración, probar el flujo de auth end to end. Después, spec del módulo de paquetes.
+- DB de desarrollo en Neon: proyecto creado, migraciones corridas (`20260804135828_init`, `20260804144217_add_packages`, `20260805130934_add_properties`).
+- Spec de propiedades aprobada (openspec/changes/properties/spec.md) y **modelo de datos implementado**: `Property`, `PropertyMedia`, `PropertyDeletionRequest` en Prisma. Todavía falta el módulo (`properties.module/service/controller`) — solo está la migración corrida, no hay endpoints ni lógica de negocio.
+- Reglas nuevas de este módulo (no estaban en el modelo original, decisión confirmada con Marthin):
+  - Estados `sold`/`rented`: al cerrar una venta/alquiler, la propiedad sigue visible en el buscador y su ficha (con badge) durante una ventana de retención — default 30 días desde `closedAt`, configurable — para seguir generando tráfico aunque ya no esté disponible.
+  - Eliminación de propiedad vía solicitud: tabla `property_deletion_requests` (mismo flujo `pending`/`approved`/`rejected` que `PackagePurchase`, reusando el enum `PurchaseStatus`). El asesor dueño no borra directo, pide la baja y avisa al admin por WhatsApp (sin notificación automática, Fase 1 no tiene proveedor de email/push); el `franchise_admin`/`super_admin` aprueba (borra) o rechaza.
+  - `lat`/`lng` como columnas `Decimal` simples, sin PostGIS — el buscador filtra por ciudad/zona, no por radio en km.
+- Nota de infra: `connect-pg-simple` usa una tabla `session` en la misma DB de Neon que **no** está modelada en Prisma (a propósito). Cualquier `prisma migrate diff`/`db push` contra la DB en vivo la va a marcar como "a borrar" — nunca aplicar ese DROP, es la tabla de sesiones activas.
+- `apps/web` no existe todavía: cero frontend arrancado.
+- Identidad visual provisoria (logo + paleta de Muller Producciones) documentada arriba, assets en `docs/brand/`.
+- Próximo paso: implementar el módulo `properties` (service/controller/DTOs) sobre el modelo ya migrado — publicar (con `consumeQuota`), buscador con filtros, carga de media a R2, cerrar (sold/rented), solicitud de baja. Después, leads/CRM básico.
