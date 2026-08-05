@@ -16,6 +16,12 @@ export const ALLOWED_MEDIA_MIME_TYPES = new Set([
 ]);
 export const MAX_MEDIA_SIZE_BYTES = 200 * 1024 * 1024; // 200MB (video de drone)
 const PRESIGNED_URL_TTL_SECONDS = 10 * 60; // 10 min
+// ponytail: media de propiedad publicada se sirve con URL prefirmada de
+// vida mas larga (se regenera en cada fetch, sin cache de por medio, asi
+// que 1h alcanza) en vez de mover el bucket a publico + dominio custom.
+// Si el trafico lo justifica, pasar a un bucket publico y devolver la key
+// directo.
+const MEDIA_URL_TTL_SECONDS = 60 * 60; // 1 hora
 
 interface UploadRules {
   allowedMimeTypes: Set<string>;
@@ -67,6 +73,12 @@ export class R2Service {
   getPresignedUrl(key: string): Promise<string> {
     return getSignedUrl(this.client, new GetObjectCommand({ Bucket: this.bucket, Key: key }), {
       expiresIn: PRESIGNED_URL_TTL_SECONDS,
+    });
+  }
+
+  getMediaUrl(key: string): Promise<string> {
+    return getSignedUrl(this.client, new GetObjectCommand({ Bucket: this.bucket, Key: key }), {
+      expiresIn: MEDIA_URL_TTL_SECONDS,
     });
   }
 
