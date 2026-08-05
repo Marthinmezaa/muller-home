@@ -1,5 +1,6 @@
 import { searchProperties } from '@/lib/api';
 import { PropertyCard } from '@/components/PropertyCard';
+import { PropertyMapLoader } from '@/components/PropertyMapLoader';
 import { SearchFilters } from '@/components/SearchFilters';
 import type { SearchFilters as Filters } from '@/lib/types';
 
@@ -22,6 +23,10 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 p-6">
       <h1 className="text-2xl font-semibold">Muller Home</h1>
       <SearchFilters filters={filters} />
+
+      <div className="h-96 overflow-hidden rounded-lg border border-black/10 dark:border-white/15">
+        <PropertyMapLoader properties={properties} />
+      </div>
 
       {properties.length === 0 ? (
         <p className="opacity-70">No hay propiedades que coincidan con esa búsqueda.</p>
