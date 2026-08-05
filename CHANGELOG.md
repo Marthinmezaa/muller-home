@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.6.0...muller-home-v0.7.0) (2026-08-05)
+
+
+### Features
+
+* mapa en el buscador con Leaflet + OpenStreetMap ([05b1c61](https://github.com/Marthinmezaa/muller-home/commit/05b1c61587df46a683a174ce168f43382460a016))
+* mapa en el buscador con Leaflet + OpenStreetMap ([9b76f66](https://github.com/Marthinmezaa/muller-home/commit/9b76f6643cd1fca97d31eade4ca5738f64b9f0e7))
+
 ## [0.6.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.5.0...muller-home-v0.6.0) (2026-08-05)
 
 
