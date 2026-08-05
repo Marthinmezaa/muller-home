@@ -173,7 +173,7 @@ model Property {
 model PropertyMedia {
   id         String    @id @default(uuid())
   propertyId String
-  property   Property  @relation(fields: [propertyId], references: [id])
+  property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   type       MediaType
   /// Object key en R2, mismo bucket/patron que el comprobante de pago.
   key        String
@@ -191,7 +191,7 @@ model PropertyMedia {
 model PropertyDeletionRequest {
   id            String         @id @default(uuid())
   propertyId    String
-  property      Property       @relation(fields: [propertyId], references: [id])
+  property      Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   requestedById String
   requestedBy   User           @relation("DeletionRequester", fields: [requestedById], references: [id])
   status        PurchaseStatus @default(PENDING)
