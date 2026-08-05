@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.3.0...muller-home-v0.4.0) (2026-08-05)
+
+
+### Features
+
+* modelo de datos del módulo de propiedades ([489840b](https://github.com/Marthinmezaa/muller-home/commit/489840b3563ba3b2153a46ce01a94e46ddc7a119))
+* modelo de datos del módulo de propiedades ([2a1e2cc](https://github.com/Marthinmezaa/muller-home/commit/2a1e2cc07fda3115ca0b712842c04d02e728d4a0))
+
 ## [0.3.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.2.0...muller-home-v0.3.0) (2026-08-04)
 
 
