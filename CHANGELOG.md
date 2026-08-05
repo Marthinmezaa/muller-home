@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.5.0...muller-home-v0.6.0) (2026-08-05)
+
+
+### Features
+
+* portal público en apps/web (Next.js) ([dcc3db1](https://github.com/Marthinmezaa/muller-home/commit/dcc3db1811a996748a87890f2cd0b4a5d8303e33))
+* portal público en apps/web (Next.js) ([54c5379](https://github.com/Marthinmezaa/muller-home/commit/54c5379660b813eabb697451c4683493baaec555))
+
+
+### Bug Fixes
+
+* incluye datos de contacto del owner y resuelve URLs de media ([54c5379](https://github.com/Marthinmezaa/muller-home/commit/54c5379660b813eabb697451c4683493baaec555))
+
 ## [0.5.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.4.0...muller-home-v0.5.0) (2026-08-05)
 
 
