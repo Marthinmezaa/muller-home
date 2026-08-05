@@ -100,8 +100,8 @@ export class PropertiesService {
     });
   }
 
-  searchProperties(filters: SearchPropertiesDto) {
-    return this.prisma.property.findMany({
+  async searchProperties(filters: SearchPropertiesDto) {
+    const properties = await this.prisma.property.findMany({
       where: {
         AND: [
           this.visibleStatusFilter(),
@@ -116,19 +116,21 @@ export class PropertiesService {
       include: { media: true },
       orderBy: { createdAt: 'desc' },
     });
+
+    return Promise.all(properties.map((property) => this.attachMediaUrls(property)));
   }
 
   async getPropertyDetail(id: string) {
     const property = await this.prisma.property.findFirst({
       where: { id, ...this.visibleStatusFilter() },
-      include: { media: true },
+      include: { media: true, owner: { select: { fullName: true, phone: true } } },
     });
 
     if (!property) {
       throw new NotFoundException('Propiedad no encontrada');
     }
 
-    return property;
+    return this.attachMediaUrls(property);
   }
 
   findMyProperties(userId: string) {
@@ -168,6 +170,16 @@ export class PropertiesService {
       where: { id: requestId },
       data: { status: PurchaseStatus.REJECTED, reviewedById: reviewer.id, reviewedAt: new Date() },
     });
+  }
+
+  /** Resuelve cada key de R2 a una URL prefirmada de lectura publica. */
+  private async attachMediaUrls<T extends { media: { key: string }[] }>(
+    property: T,
+  ): Promise<T & { media: (T['media'][number] & { url: string })[] }> {
+    const media = await Promise.all(
+      property.media.map(async (item) => ({ ...item, url: await this.storage.getMediaUrl(item.key) })),
+    );
+    return { ...property, media };
   }
 
   private visibleStatusFilter(): Prisma.PropertyWhereInput {

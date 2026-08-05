@@ -4,7 +4,12 @@ import { PropertiesService, RETENTION_DAYS } from './properties.service';
 
 function createService(overrides: { prisma?: Record<string, unknown>; packages?: Record<string, unknown> } = {}) {
   const prisma: Record<string, unknown> = {
-    property: { findUnique: jest.fn(), update: jest.fn(), findMany: jest.fn(), findFirst: jest.fn() },
+    property: {
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      findMany: jest.fn().mockResolvedValue([]),
+      findFirst: jest.fn(),
+    },
     propertyMedia: { count: jest.fn().mockResolvedValue(0), create: jest.fn() },
     propertyDeletionRequest: { create: jest.fn(), findUnique: jest.fn(), update: jest.fn() },
     user: { findUnique: jest.fn() },

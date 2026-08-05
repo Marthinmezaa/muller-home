@@ -21,7 +21,7 @@ Plataforma inmobiliaria multi-rol para Muller Producciones (fotografía/video co
 
 - Monorepo con npm workspaces (`apps/*`, `packages/*`) — sin Nx/Turborepo hasta que haga falta.
 - Backend: Node.js + NestJS + TypeScript. Decisión confirmada con Marthin: dado el objetivo de escalar a plataforma grande (no solo el MVP), los guards/decorators de Nest (`@Roles()`, `RolesGuard`) resuelven el RBAC de 3 roles con menos boilerplate que middlewares a mano en Express, y la estructura de módulos calza con Clean/Hexagonal Architecture sin armarla manualmente.
-- Frontend: Next.js + TypeScript (SEO real para fichas de propiedad + optimización de imágenes/video de drone).
+- Frontend: Next.js + TypeScript + Tailwind CSS (SEO real para fichas de propiedad + optimización de imágenes/video de drone). Decisión no discutida explícitamente con Marthin, es el default razonable — avisar si prefiere otra cosa.
 - DB: PostgreSQL. Dev: Neon (serverless, sin Docker). `infra/docker-compose.yml` queda como alternativa local si hace falta. Producción: Postgres propio en el VPS.
 - Storage: Cloudflare R2 (API S3) para fotos/video del "locker" de cada asesor.
 - Infra producción (futuro): VPS Hostinger, plan KVM 2.
@@ -76,6 +76,8 @@ Plazos: MVP 1 mes, proyecto completo 3 meses.
   - `lat`/`lng` como columnas `Decimal` simples, sin PostGIS — el buscador filtra por ciudad/zona, no por radio en km.
   - Autorización de gestión (editar/publicar/pausar/cerrar): dueño, `franchise_admin` del mismo equipo (mismo `franchiseId`), o `super_admin`. Aprobar/rechazar baja: solo `franchise_admin`/`super_admin` — el dueño nunca aprueba su propia solicitud.
 - Nota de infra: `connect-pg-simple` usa una tabla `session` en la misma DB de Neon que **no** está modelada en Prisma (a propósito). Cualquier `prisma migrate diff`/`db push` contra la DB en vivo la va a marcar como "a borrar" — nunca aplicar ese DROP, es la tabla de sesiones activas.
-- `apps/web` no existe todavía: cero frontend arrancado.
-- Identidad visual provisoria (logo + paleta de Muller Producciones) documentada arriba, assets en `docs/brand/`.
-- Próximo paso: arrancar `apps/web` (Next.js) para consumir el portal público de propiedades, o el módulo de leads/CRM básico — a definir con Marthin cuál primero.
+- `apps/web` arrancado con `create-next-app` (Next.js 16, App Router, TypeScript, Tailwind v4). **Next.js 16 trae cambios de breaking respecto a versiones anteriores** (`params`/`searchParams` son `Promise` a awaitear, nuevo modelo opcional "Cache Components" vía `cacheComponents: true` en `next.config.ts`). Decisión: **no** se habilitó Cache Components — queda con el modelo de caching "previo" (fetch sin cache por default, sin exigencia de envolver todo en `<Suspense>`), más simple para el portal público. Antes de tocar código de Next, revisar `node_modules/next/dist/docs/` (su propio `AGENTS.md` lo pide) porque la versión instalada puede no coincidir con lo entrenado.
+- Portal público implementado: `/` (buscador con filtros vía form GET nativo, sin JS) y `/propiedades/[id]` (ficha con galería, datos, botón de WhatsApp al asesor). Ambas rutas son dinámicas (fetch sin cache contra `apps/api`), sin mapa todavía (fuera de esta pasada, queda pendiente elegir librería — Leaflet+OSM no necesita API key, Mapbox sí).
+- Fix de backend descubierto al construir la ficha: `getPropertyDetail` no incluía el contacto del `owner` (`fullName`/`phone`) y la media se devolvía solo con su `key` de R2 (bucket privado, sin URL usable por el frontend). Se agregó `attachMediaUrls` en `properties.service.ts` (URL prefirmada de 1h, reusa `R2Service`) y el include del `owner`.
+- Identidad visual provisoria (logo + paleta de Muller Producciones) documentada arriba, assets en `docs/brand/`. Falta aplicarla en el frontend (hoy usa el navy `#3B3A72` en botones nomás).
+- Próximo paso: elegir librería de mapa para el buscador, o arrancar el módulo de leads/CRM básico — a definir con Marthin.
