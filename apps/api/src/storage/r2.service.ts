@@ -6,10 +6,28 @@ import { randomUUID } from 'node:crypto';
 
 export const ALLOWED_PROOF_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
 export const MAX_PROOF_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+export const ALLOWED_MEDIA_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'video/mp4',
+  'video/quicktime',
+  'video/webm',
+]);
+export const MAX_MEDIA_SIZE_BYTES = 200 * 1024 * 1024; // 200MB (video de drone)
 const PRESIGNED_URL_TTL_SECONDS = 10 * 60; // 10 min
 
-/// Storage privado en R2 (S3-compatible) para el comprobante de pago.
-/// El bucket nunca es publico: los objetos se leen via URL prefirmada.
+interface UploadRules {
+  allowedMimeTypes: Set<string>;
+  maxSizeBytes: number;
+  prefix: string;
+  fieldLabel: string;
+}
+
+/// Storage privado en R2 (S3-compatible) para comprobantes de pago y media
+/// de propiedades. El bucket nunca es publico: los objetos se leen via URL
+/// prefirmada (el comprobante) o se sirven directo por su key (media publica
+/// de una propiedad publicada, resuelto por el modulo de propiedades).
 @Injectable()
 export class R2Service {
   private readonly client: S3Client;
@@ -28,10 +46,34 @@ export class R2Service {
     });
   }
 
-  async uploadProof(file?: Express.Multer.File): Promise<string> {
-    this.validateProof(file);
+  uploadProof(file?: Express.Multer.File): Promise<string> {
+    return this.upload(file, {
+      allowedMimeTypes: ALLOWED_PROOF_MIME_TYPES,
+      maxSizeBytes: MAX_PROOF_SIZE_BYTES,
+      prefix: 'proofs',
+      fieldLabel: 'El comprobante de pago',
+    });
+  }
 
-    const key = `proofs/${randomUUID()}-${file!.originalname}`;
+  uploadPropertyMedia(file?: Express.Multer.File): Promise<string> {
+    return this.upload(file, {
+      allowedMimeTypes: ALLOWED_MEDIA_MIME_TYPES,
+      maxSizeBytes: MAX_MEDIA_SIZE_BYTES,
+      prefix: 'properties',
+      fieldLabel: 'La foto o el video',
+    });
+  }
+
+  getPresignedUrl(key: string): Promise<string> {
+    return getSignedUrl(this.client, new GetObjectCommand({ Bucket: this.bucket, Key: key }), {
+      expiresIn: PRESIGNED_URL_TTL_SECONDS,
+    });
+  }
+
+  private async upload(file: Express.Multer.File | undefined, rules: UploadRules): Promise<string> {
+    this.validate(file, rules);
+
+    const key = `${rules.prefix}/${randomUUID()}-${file!.originalname}`;
     await this.client.send(
       new PutObjectCommand({
         Bucket: this.bucket,
@@ -44,21 +86,15 @@ export class R2Service {
     return key;
   }
 
-  getPresignedUrl(key: string): Promise<string> {
-    return getSignedUrl(this.client, new GetObjectCommand({ Bucket: this.bucket, Key: key }), {
-      expiresIn: PRESIGNED_URL_TTL_SECONDS,
-    });
-  }
-
-  private validateProof(file?: Express.Multer.File): void {
+  private validate(file: Express.Multer.File | undefined, rules: UploadRules): void {
     if (!file) {
-      throw new BadRequestException('El comprobante de pago es requerido');
+      throw new BadRequestException(`${rules.fieldLabel} es requerido`);
     }
-    if (!ALLOWED_PROOF_MIME_TYPES.has(file.mimetype)) {
-      throw new BadRequestException('El comprobante debe ser una imagen o un PDF');
+    if (!rules.allowedMimeTypes.has(file.mimetype)) {
+      throw new BadRequestException(`${rules.fieldLabel} tiene un formato no soportado`);
     }
-    if (file.size > MAX_PROOF_SIZE_BYTES) {
-      throw new BadRequestException('El comprobante supera el tamano maximo (5MB)');
+    if (file.size > rules.maxSizeBytes) {
+      throw new BadRequestException(`${rules.fieldLabel} supera el tamano maximo permitido`);
     }
   }
 }
