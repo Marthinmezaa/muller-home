@@ -8,6 +8,12 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // apps/web llama a la API directo desde el navegador (ej. LeadForm) ademas
+  // del fetch server-side que ya hacia; sin esto el navegador bloquea esas
+  // llamadas por CORS. credentials:true porque las rutas autenticadas usan
+  // cookie de sesion.
+  app.enableCors({ origin: process.env.WEB_URL ?? 'http://localhost:3000', credentials: true });
+
   const PgSession = connectPgSimple(session);
 
   app.use(

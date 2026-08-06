@@ -2,14 +2,11 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getProperty } from '@/lib/api';
+import { LeadForm } from '@/components/LeadForm';
 import { CLOSED_STATUS_LABELS, OPERATION_TYPE_LABELS, PROPERTY_TYPE_LABELS } from '@/lib/types';
 
 function formatPrice(price: string): string {
   return new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 }).format(Number(price));
-}
-
-function whatsappLink(phone: string): string {
-  return `https://wa.me/${phone.replace(/\D/g, '')}`;
 }
 
 export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -68,14 +65,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       </div>
 
       {property.owner?.phone && (
-        <a
-          href={whatsappLink(property.owner.phone)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-fit rounded bg-[#3B3A72] px-4 py-2 text-white"
-        >
-          Contactar a {property.owner.fullName} por WhatsApp
-        </a>
+        <LeadForm propertyId={property.id} advisorPhone={property.owner.phone} advisorName={property.owner.fullName} />
       )}
     </main>
   );

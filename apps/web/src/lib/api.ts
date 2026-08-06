@@ -31,3 +31,20 @@ export async function getProperty(id: string): Promise<Property | null> {
   }
   return res.json();
 }
+
+export interface LeadInput {
+  name: string;
+  phone: string;
+  message: string;
+}
+
+export async function createLead(propertyId: string, lead: LeadInput): Promise<void> {
+  const res = await fetch(`${API_URL}/properties/${propertyId}/leads`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(lead),
+  });
+  if (!res.ok) {
+    throw new Error('No se pudo enviar el mensaje');
+  }
+}
