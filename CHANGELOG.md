@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.7.0...muller-home-v0.8.0) (2026-08-06)
+
+
+### Features
+
+* módulo de leads con formulario de contacto y contador de vistas ([3933b6c](https://github.com/Marthinmezaa/muller-home/commit/3933b6c4143840dc039746b301b7f0d6cd7349b6))
+
+
+### Bug Fixes
+
+* habilitar CORS en la API para llamados desde el navegador ([d0805ea](https://github.com/Marthinmezaa/muller-home/commit/d0805ea1c4e46ae3643e72d629a182deda96a594))
+
 ## [0.7.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.6.0...muller-home-v0.7.0) (2026-08-05)
 
 
