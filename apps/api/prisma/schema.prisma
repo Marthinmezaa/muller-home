@@ -160,10 +160,14 @@ model Property {
   /// retencion (configurable, default 30 dias) define hasta cuando sigue
   /// visible en el buscador publico para seguir generando trafico.
   closedAt         DateTime?
+  /// Total acumulado de accesos a la ficha publica. Sin serie temporal ni
+  /// deduplicacion por visitante (alcance "CRM basico" de Fase 1).
+  viewsCount       Int                       @default(0)
   ownerId          String
   owner            User                      @relation("PropertyOwner", fields: [ownerId], references: [id])
   media            PropertyMedia[]
   deletionRequests PropertyDeletionRequest[]
+  leads            Lead[]
   createdAt        DateTime                  @default(now())
   updatedAt        DateTime                  @updatedAt
 
@@ -201,4 +205,20 @@ model PropertyDeletionRequest {
   createdAt     DateTime       @default(now())
 
   @@map("property_deletion_requests")
+}
+
+/// Interes de un visitante en una propiedad, capturado desde el formulario
+/// de contacto de la ficha publica (que ademas abre WhatsApp con el mensaje
+/// precargado, sin reemplazar ese canal).
+model Lead {
+  id         String   @id @default(uuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  name       String
+  phone      String
+  email      String?
+  message    String
+  createdAt  DateTime @default(now())
+
+  @@map("leads")
 }

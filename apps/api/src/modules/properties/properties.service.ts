@@ -130,7 +130,17 @@ export class PropertiesService {
       throw new NotFoundException('Propiedad no encontrada');
     }
 
+    await this.prisma.property.update({ where: { id }, data: { viewsCount: { increment: 1 } } });
+
     return this.attachMediaUrls(property);
+  }
+
+  /** Usado por el modulo de leads: 404 si la propiedad no es visible publicamente, sin contar vista. */
+  async assertPropertyVisible(id: string): Promise<void> {
+    const property = await this.prisma.property.findFirst({ where: { id, ...this.visibleStatusFilter() } });
+    if (!property) {
+      throw new NotFoundException('Propiedad no encontrada');
+    }
   }
 
   findMyProperties(userId: string) {
@@ -197,7 +207,8 @@ export class PropertiesService {
     };
   }
 
-  private async findOwnedOrThrow(id: string): Promise<Property> {
+  /** Publico: reusado por el modulo de leads para resolver la propiedad antes de autorizar. */
+  async findOwnedOrThrow(id: string): Promise<Property> {
     const property = await this.prisma.property.findUnique({ where: { id } });
     if (!property) {
       throw new NotFoundException('Propiedad no encontrada');
@@ -219,8 +230,8 @@ export class PropertiesService {
     return request;
   }
 
-  /** Dueño, franchise_admin de su mismo equipo, o super_admin. */
-  private async assertCanManage(user: User, property: Property): Promise<void> {
+  /** Dueño, franchise_admin de su mismo equipo, o super_admin. Publico: mismo criterio que usa el modulo de leads para ver los leads de una propiedad. */
+  async assertCanManage(user: User, property: Property): Promise<void> {
     if (user.role === Role.SUPER_ADMIN || property.ownerId === user.id) {
       return;
     }
