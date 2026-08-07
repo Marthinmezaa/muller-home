@@ -10,6 +10,16 @@ export type PropertyStatus = 'DRAFT' | 'PUBLISHED' | 'PAUSED' | 'SOLD' | 'RENTED
 
 export type MediaType = 'PHOTO' | 'VIDEO';
 
+export type Role = 'ADVISOR' | 'FRANCHISE_ADMIN' | 'SUPER_ADMIN';
+
+export const PROPERTY_STATUS_LABELS: Record<PropertyStatus, string> = {
+  DRAFT: 'Borrador',
+  PUBLISHED: 'Publicada',
+  PAUSED: 'Pausada',
+  SOLD: 'Vendida',
+  RENTED: 'Alquilada',
+};
+
 export const OPERATION_TYPE_LABELS: Record<OperationType, string> = {
   SALE: 'Venta',
   RENT: 'Alquiler',
@@ -58,8 +68,30 @@ export interface Property {
   lng: string;
   status: PropertyStatus;
   closedAt: string | null;
+  viewsCount: number;
   media: PropertyMedia[];
   owner?: PropertyOwner;
+  /** Solo presente en GET /properties/mine (panel de asesor). */
+  _count?: { leads: number };
+}
+
+export interface SafeUser {
+  id: string;
+  email: string;
+  fullName: string;
+  phone: string | null;
+  role: Role;
+  franchiseId: string | null;
+}
+
+export interface Lead {
+  id: string;
+  name: string;
+  phone: string;
+  email: string | null;
+  message: string;
+  createdAt: string;
+  property: { id: string; title: string };
 }
 
 export interface SearchFilters {
