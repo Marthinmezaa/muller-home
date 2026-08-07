@@ -1,8 +1,10 @@
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { OperationType, PropertyStatus, PurchaseStatus, Role } from '@prisma/client';
 import { PropertiesService, RETENTION_DAYS } from './properties.service';
 
-function createService(overrides: { prisma?: Record<string, unknown>; packages?: Record<string, unknown> } = {}) {
+function createService(
+  overrides: { prisma?: Record<string, unknown>; packages?: Record<string, unknown>; storage?: Record<string, unknown> } = {},
+) {
   const prisma: Record<string, unknown> = {
     property: {
       findUnique: jest.fn(),
@@ -10,7 +12,14 @@ function createService(overrides: { prisma?: Record<string, unknown>; packages?:
       findMany: jest.fn().mockResolvedValue([]),
       findFirst: jest.fn(),
     },
-    propertyMedia: { count: jest.fn().mockResolvedValue(0), create: jest.fn() },
+    propertyMedia: {
+      count: jest.fn().mockResolvedValue(0),
+      create: jest.fn(),
+      findFirst: jest.fn(),
+      findMany: jest.fn().mockResolvedValue([]),
+      delete: jest.fn(),
+      update: jest.fn(),
+    },
     propertyDeletionRequest: { create: jest.fn(), findUnique: jest.fn(), update: jest.fn() },
     user: { findUnique: jest.fn() },
     ...overrides.prisma,
@@ -18,8 +27,9 @@ function createService(overrides: { prisma?: Record<string, unknown>; packages?:
   prisma.$transaction = jest.fn((callback: (tx: unknown) => unknown) => callback(prisma));
 
   const packages = { consumeQuota: jest.fn().mockResolvedValue(undefined), ...overrides.packages };
-  const service = new PropertiesService(prisma as never, {} as never, packages as never);
-  return { service, prisma: prisma as any, packages };
+  const storage = { getMediaUrl: jest.fn().mockResolvedValue('https://r2.example/signed'), deleteObject: jest.fn(), ...overrides.storage };
+  const service = new PropertiesService(prisma as never, storage as never, packages as never);
+  return { service, prisma: prisma as any, packages, storage };
 }
 
 describe('PropertiesService.closeProperty', () => {
@@ -149,6 +159,112 @@ describe('PropertiesService visibility window', () => {
     expect(closedCase.status.in).toEqual([PropertyStatus.SOLD, PropertyStatus.RENTED]);
     // El corte es hacia el pasado (gte), con margen de un segundo por el tiempo de ejecucion del test.
     expect(Math.abs(closedCase.closedAt.gte.getTime() - expectedCutoff.getTime())).toBeLessThan(1000);
+  });
+});
+
+describe('PropertiesService.getManagedProperty', () => {
+  it('returns a draft property (not visible publicly) to its owner, with resolved media urls', async () => {
+    const { service, storage } = createService({
+      prisma: {
+        property: {
+          findUnique: jest.fn().mockResolvedValue({
+            id: 'p1',
+            ownerId: 'owner-1',
+            status: PropertyStatus.DRAFT,
+            media: [{ id: 'm1', key: 'properties/foo.jpg' }],
+          }),
+        },
+      },
+    });
+    const owner = { id: 'owner-1', role: Role.ADVISOR, franchiseId: null } as never;
+
+    const result = await service.getManagedProperty(owner, 'p1');
+
+    expect(result.media[0].url).toBe('https://r2.example/signed');
+    expect(storage.getMediaUrl).toHaveBeenCalledWith('properties/foo.jpg');
+  });
+
+  it('blocks a stranger advisor', async () => {
+    const { service } = createService({
+      prisma: {
+        property: {
+          findUnique: jest.fn().mockResolvedValue({ id: 'p1', ownerId: 'owner-1', status: PropertyStatus.DRAFT, media: [] }),
+        },
+      },
+    });
+    const stranger = { id: 'someone-else', role: Role.ADVISOR, franchiseId: null } as never;
+
+    await expect(service.getManagedProperty(stranger, 'p1')).rejects.toThrow(ForbiddenException);
+  });
+});
+
+describe('PropertiesService.deleteMedia', () => {
+  it('deletes the object from storage and promotes the next photo to cover', async () => {
+    const { service, prisma, storage } = createService({
+      prisma: {
+        property: { findUnique: jest.fn().mockResolvedValue({ id: 'p1', ownerId: 'owner-1', status: PropertyStatus.DRAFT }) },
+        propertyMedia: {
+          findFirst: jest
+            .fn()
+            .mockResolvedValueOnce({ id: 'm1', propertyId: 'p1', key: 'properties/cover.jpg', isCover: true, order: 0 })
+            .mockResolvedValueOnce({ id: 'm2', propertyId: 'p1', order: 1 }),
+          delete: jest.fn(),
+          update: jest.fn(),
+        },
+      },
+    });
+    const owner = { id: 'owner-1', role: Role.ADVISOR, franchiseId: null } as never;
+
+    await service.deleteMedia(owner, 'p1', 'm1');
+
+    expect(storage.deleteObject).toHaveBeenCalledWith('properties/cover.jpg');
+    expect(prisma.propertyMedia.delete).toHaveBeenCalledWith({ where: { id: 'm1' } });
+    expect(prisma.propertyMedia.update).toHaveBeenCalledWith({ where: { id: 'm2' }, data: { isCover: true } });
+  });
+
+  it('throws when the media does not belong to the property', async () => {
+    const { service } = createService({
+      prisma: {
+        property: { findUnique: jest.fn().mockResolvedValue({ id: 'p1', ownerId: 'owner-1', status: PropertyStatus.DRAFT }) },
+        propertyMedia: { findFirst: jest.fn().mockResolvedValue(null) },
+      },
+    });
+    const owner = { id: 'owner-1', role: Role.ADVISOR, franchiseId: null } as never;
+
+    await expect(service.deleteMedia(owner, 'p1', 'not-mine')).rejects.toThrow(NotFoundException);
+  });
+});
+
+describe('PropertiesService.reorderMedia', () => {
+  it('sets order and marks the first id as cover', async () => {
+    const { service, prisma } = createService({
+      prisma: {
+        property: { findUnique: jest.fn().mockResolvedValue({ id: 'p1', ownerId: 'owner-1', status: PropertyStatus.DRAFT }) },
+        propertyMedia: {
+          findMany: jest.fn().mockResolvedValue([{ id: 'm1' }, { id: 'm2' }, { id: 'm3' }]),
+          update: jest.fn(),
+        },
+      },
+    });
+    const owner = { id: 'owner-1', role: Role.ADVISOR, franchiseId: null } as never;
+
+    await service.reorderMedia(owner, 'p1', ['m3', 'm1', 'm2']);
+
+    expect(prisma.propertyMedia.update).toHaveBeenNthCalledWith(1, { where: { id: 'm3' }, data: { order: 0, isCover: true } });
+    expect(prisma.propertyMedia.update).toHaveBeenNthCalledWith(2, { where: { id: 'm1' }, data: { order: 1, isCover: false } });
+    expect(prisma.propertyMedia.update).toHaveBeenNthCalledWith(3, { where: { id: 'm2' }, data: { order: 2, isCover: false } });
+  });
+
+  it('rejects an id list that does not match the property\'s existing media', async () => {
+    const { service } = createService({
+      prisma: {
+        property: { findUnique: jest.fn().mockResolvedValue({ id: 'p1', ownerId: 'owner-1', status: PropertyStatus.DRAFT }) },
+        propertyMedia: { findMany: jest.fn().mockResolvedValue([{ id: 'm1' }, { id: 'm2' }]) },
+      },
+    });
+    const owner = { id: 'owner-1', role: Role.ADVISOR, franchiseId: null } as never;
+
+    await expect(service.reorderMedia(owner, 'p1', ['m1', 'not-mine'])).rejects.toThrow(BadRequestException);
   });
 });
 

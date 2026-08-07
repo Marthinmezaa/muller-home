@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role } from '@prisma/client';
 import type { User } from '@prisma/client';
@@ -8,6 +8,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { SessionAuthGuard } from '../auth/guards/session-auth.guard';
 import { MAX_MEDIA_SIZE_BYTES } from '../../storage/r2.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
+import { ReorderMediaDto } from './dto/reorder-media.dto';
 import { SearchPropertiesDto } from './dto/search-properties.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
 import { PropertiesService } from './properties.service';
@@ -36,6 +37,12 @@ export class PropertiesController {
 
   // --- Publicación y gestión (asesor / franquicia / super admin) ---
 
+  @Get(':id/manage')
+  @UseGuards(SessionAuthGuard)
+  getManaged(@Param('id') id: string, @CurrentUser() user: User) {
+    return this.propertiesService.getManagedProperty(user, id);
+  }
+
   @Post()
   @UseGuards(SessionAuthGuard, RolesGuard)
   @Roles(Role.ADVISOR, Role.FRANCHISE_ADMIN)
@@ -54,6 +61,18 @@ export class PropertiesController {
   @UseInterceptors(FileInterceptor('media', { limits: { fileSize: MAX_MEDIA_SIZE_BYTES } }))
   addMedia(@Param('id') id: string, @CurrentUser() user: User, @UploadedFile() file?: Express.Multer.File) {
     return this.propertiesService.addMedia(user, id, file);
+  }
+
+  @Delete(':id/media/:mediaId')
+  @UseGuards(SessionAuthGuard)
+  deleteMedia(@Param('id') id: string, @Param('mediaId') mediaId: string, @CurrentUser() user: User) {
+    return this.propertiesService.deleteMedia(user, id, mediaId);
+  }
+
+  @Patch(':id/media/reorder')
+  @UseGuards(SessionAuthGuard)
+  reorderMedia(@Param('id') id: string, @Body() dto: ReorderMediaDto, @CurrentUser() user: User) {
+    return this.propertiesService.reorderMedia(user, id, dto.mediaIds);
   }
 
   @Patch(':id/publish')
