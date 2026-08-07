@@ -151,3 +151,36 @@ describe('PropertiesService visibility window', () => {
     expect(Math.abs(closedCase.closedAt.gte.getTime() - expectedCutoff.getTime())).toBeLessThan(1000);
   });
 });
+
+describe('PropertiesService.findMyProperties scoping', () => {
+  it('scopes an advisor to their own properties', async () => {
+    const { service, prisma } = createService();
+    const advisor = { id: 'advisor-1', role: Role.ADVISOR, franchiseId: null } as never;
+
+    await service.findMyProperties(advisor);
+
+    expect(prisma.property.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { ownerId: 'advisor-1' } }),
+    );
+  });
+
+  it('scopes a franchise_admin to their whole team', async () => {
+    const { service, prisma } = createService();
+    const admin = { id: 'admin-1', role: Role.FRANCHISE_ADMIN, franchiseId: 'franchise-1' } as never;
+
+    await service.findMyProperties(admin);
+
+    expect(prisma.property.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { owner: { franchiseId: 'franchise-1' } } }),
+    );
+  });
+
+  it('does not scope a super_admin', async () => {
+    const { service, prisma } = createService();
+    const superAdmin = { id: 'root', role: Role.SUPER_ADMIN, franchiseId: null } as never;
+
+    await service.findMyProperties(superAdmin);
+
+    expect(prisma.property.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: {} }));
+  });
+});

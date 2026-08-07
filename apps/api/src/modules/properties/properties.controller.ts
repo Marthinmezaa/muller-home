@@ -26,7 +26,7 @@ export class PropertiesController {
   @Get('mine')
   @UseGuards(SessionAuthGuard)
   findMine(@CurrentUser() user: User) {
-    return this.propertiesService.findMyProperties(user.id);
+    return this.propertiesService.findMyProperties(user);
   }
 
   @Get(':id')

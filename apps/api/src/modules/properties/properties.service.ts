@@ -143,8 +143,23 @@ export class PropertiesService {
     }
   }
 
-  findMyProperties(userId: string) {
-    return this.prisma.property.findMany({ where: { ownerId: userId }, orderBy: { createdAt: 'desc' } });
+  findMyProperties(user: User) {
+    return this.prisma.property.findMany({
+      where: this.scopeFilter(user),
+      orderBy: { createdAt: 'desc' },
+      include: { _count: { select: { leads: true } } },
+    });
+  }
+
+  /** Asesor: solo sus propiedades. Franquicia: todo el equipo. Super admin: todo. Mismo criterio que LeadsService.scopeFilter. */
+  private scopeFilter(user: User): Prisma.PropertyWhereInput {
+    if (user.role === Role.SUPER_ADMIN) {
+      return {};
+    }
+    if (user.role === Role.FRANCHISE_ADMIN && user.franchiseId) {
+      return { owner: { franchiseId: user.franchiseId } };
+    }
+    return { ownerId: user.id };
   }
 
   async requestDeletion(user: User, propertyId: string) {
