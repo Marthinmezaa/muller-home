@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.9.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.8.0...muller-home-v0.9.0) (2026-08-07)
+
+
+### Features
+
+* agregar panel de asesor (login, propiedades propias, leads) ([b409295](https://github.com/Marthinmezaa/muller-home/commit/b409295b823c177266c4d3a061383f8b7bf20e13))
+* panel de asesor (login, propiedades propias, leads) ([0eb551e](https://github.com/Marthinmezaa/muller-home/commit/0eb551e7d88d5a8a90be2f9430e8cc27ce5fec89))
+
+
+### Bug Fixes
+
+* extender findMyProperties para que franquicia vea el equipo completo ([d0f25fb](https://github.com/Marthinmezaa/muller-home/commit/d0f25fb736bc83d7a8e6b3efb8a27fdfa8c8100c))
+
 ## [0.8.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.7.0...muller-home-v0.8.0) (2026-08-06)
 
 
