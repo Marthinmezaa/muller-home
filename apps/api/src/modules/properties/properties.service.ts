@@ -49,6 +49,45 @@ export class PropertiesService {
     });
   }
 
+  async deleteMedia(user: User, propertyId: string, mediaId: string): Promise<void> {
+    const property = await this.findOwnedOrThrow(propertyId);
+    await this.assertCanManage(user, property);
+
+    const media = await this.prisma.propertyMedia.findFirst({ where: { id: mediaId, propertyId } });
+    if (!media) {
+      throw new NotFoundException('Foto o video no encontrado');
+    }
+
+    await this.storage.deleteObject(media.key);
+    await this.prisma.propertyMedia.delete({ where: { id: mediaId } });
+
+    if (media.isCover) {
+      const next = await this.prisma.propertyMedia.findFirst({ where: { propertyId }, orderBy: { order: 'asc' } });
+      if (next) {
+        await this.prisma.propertyMedia.update({ where: { id: next.id }, data: { isCover: true } });
+      }
+    }
+  }
+
+  async reorderMedia(user: User, propertyId: string, mediaIds: string[]) {
+    const property = await this.findOwnedOrThrow(propertyId);
+    await this.assertCanManage(user, property);
+
+    const existing = await this.prisma.propertyMedia.findMany({ where: { propertyId } });
+    const existingIds = new Set(existing.map((item) => item.id));
+    if (mediaIds.length !== existing.length || !mediaIds.every((id) => existingIds.has(id))) {
+      throw new BadRequestException('El orden debe incluir exactamente la media existente de la propiedad');
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      for (const [index, id] of mediaIds.entries()) {
+        await tx.propertyMedia.update({ where: { id }, data: { order: index, isCover: index === 0 } });
+      }
+    });
+
+    return this.prisma.propertyMedia.findMany({ where: { propertyId }, orderBy: { order: 'asc' } });
+  }
+
   async publishProperty(user: User, id: string) {
     const property = await this.findOwnedOrThrow(id);
     await this.assertCanManage(user, property);
@@ -131,6 +170,20 @@ export class PropertiesService {
     }
 
     await this.prisma.property.update({ where: { id }, data: { viewsCount: { increment: 1 } } });
+
+    return this.attachMediaUrls(property);
+  }
+
+  /** Detalle completo para el panel de gestion, sin filtrar por estado visible (a diferencia de getPropertyDetail) y sin contar vista. */
+  async getManagedProperty(user: User, id: string) {
+    const property = await this.prisma.property.findUnique({
+      where: { id },
+      include: { media: true, owner: { select: { fullName: true, phone: true } } },
+    });
+    if (!property) {
+      throw new NotFoundException('Propiedad no encontrada');
+    }
+    await this.assertCanManage(user, property);
 
     return this.attachMediaUrls(property);
   }

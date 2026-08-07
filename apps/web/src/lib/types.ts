@@ -94,6 +94,22 @@ export interface Lead {
   property: { id: string; title: string };
 }
 
+/** Campos editables de una propiedad — mismos que CreatePropertyDto/UpdatePropertyDto de la API. */
+export interface PropertyInput {
+  title: string;
+  description: string;
+  operationType: OperationType;
+  propertyType: PropertyType;
+  price: number;
+  areaM2: number;
+  rooms: number;
+  bathrooms: number;
+  address: string;
+  city: string;
+  lat: number;
+  lng: number;
+}
+
 export interface SearchFilters {
   city?: string;
   operationType?: OperationType;
