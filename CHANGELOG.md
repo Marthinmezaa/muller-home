@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.10.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.9.0...muller-home-v0.10.0) (2026-08-07)
+
+
+### Features
+
+* agregar alta y edicion de propiedad al panel de asesor ([68fed00](https://github.com/Marthinmezaa/muller-home/commit/68fed006e3d3d7fa977a0095a3d0fe5871621cbc))
+* agregar detalle gestionable, borrado y reorden de media de propiedad ([d274172](https://github.com/Marthinmezaa/muller-home/commit/d274172f90d037ce7d169764f1a7da0b9570bd7d))
+* alta y edición de propiedad (panel de asesor) ([fd36832](https://github.com/Marthinmezaa/muller-home/commit/fd3683248a1cb3a6e093631d899e08d9a6971cab))
+
 ## [0.9.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.8.0...muller-home-v0.9.0) (2026-08-07)
 
 
