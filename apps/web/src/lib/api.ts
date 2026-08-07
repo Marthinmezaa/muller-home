@@ -1,4 +1,4 @@
-import type { Lead, Property, SafeUser, SearchFilters } from './types';
+import type { Lead, Property, PropertyInput, PropertyMedia, SafeUser, SearchFilters } from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
@@ -90,4 +90,107 @@ export async function getMyLeads(): Promise<Lead[]> {
     throw new Error('No se pudieron cargar tus leads');
   }
   return res.json();
+}
+
+// --- Alta y edición de propiedad (panel de asesor) ---
+
+async function apiError(res: Response, fallback: string): Promise<Error> {
+  const body = await res.json().catch(() => null);
+  const message = Array.isArray(body?.message) ? body.message.join(', ') : body?.message;
+  return new Error(message ?? fallback);
+}
+
+export async function createProperty(input: PropertyInput): Promise<Property> {
+  const res = await fetch(`${API_URL}/properties`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo crear la propiedad');
+  }
+  return res.json();
+}
+
+export async function updateProperty(id: string, input: Partial<PropertyInput>): Promise<Property> {
+  const res = await fetch(`${API_URL}/properties/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudieron guardar los cambios');
+  }
+  return res.json();
+}
+
+/** A diferencia de getProperty, trae la propiedad sin importar su estado (draft/paused incluidos) — para el panel, no el portal público. */
+export async function getManagedProperty(id: string): Promise<Property> {
+  const res = await fetch(`${API_URL}/properties/${id}/manage`, { credentials: 'include' });
+  if (res.status === 404) {
+    return null as never;
+  }
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo cargar la propiedad');
+  }
+  return res.json();
+}
+
+export async function uploadPropertyMedia(propertyId: string, file: File): Promise<PropertyMedia> {
+  const formData = new FormData();
+  formData.append('media', file);
+  const res = await fetch(`${API_URL}/properties/${propertyId}/media`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+  if (!res.ok) {
+    throw await apiError(res, `No se pudo subir ${file.name}`);
+  }
+  return res.json();
+}
+
+export async function deletePropertyMedia(propertyId: string, mediaId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/properties/${propertyId}/media/${mediaId}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo borrar la foto');
+  }
+}
+
+export async function reorderPropertyMedia(propertyId: string, mediaIds: string[]): Promise<PropertyMedia[]> {
+  const res = await fetch(`${API_URL}/properties/${propertyId}/media/reorder`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ mediaIds }),
+  });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo reordenar');
+  }
+  return res.json();
+}
+
+async function changePropertyStatus(id: string, action: 'publish' | 'pause' | 'reactivate' | 'close'): Promise<Property> {
+  const res = await fetch(`${API_URL}/properties/${id}/${action}`, { method: 'PATCH', credentials: 'include' });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo actualizar el estado');
+  }
+  return res.json();
+}
+
+export const publishProperty = (id: string) => changePropertyStatus(id, 'publish');
+export const pauseProperty = (id: string) => changePropertyStatus(id, 'pause');
+export const reactivateProperty = (id: string) => changePropertyStatus(id, 'reactivate');
+export const closeProperty = (id: string) => changePropertyStatus(id, 'close');
+
+export async function requestPropertyDeletion(id: string): Promise<void> {
+  const res = await fetch(`${API_URL}/properties/${id}/deletion-requests`, { method: 'POST', credentials: 'include' });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo pedir la baja');
+  }
 }
