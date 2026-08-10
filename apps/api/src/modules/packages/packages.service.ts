@@ -120,7 +120,10 @@ export class PackagesService {
   }
 
   findAllPurchases() {
-    return this.prisma.packagePurchase.findMany({ orderBy: { createdAt: 'desc' } });
+    return this.prisma.packagePurchase.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { package: true, buyer: { select: { fullName: true, email: true } } },
+    });
   }
 
   async getAvailableQuota(userId: string): Promise<number> {
