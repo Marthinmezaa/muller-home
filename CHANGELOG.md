@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.11.0...muller-home-v0.12.0) (2026-08-10)
+
+
+### Features
+
+* agregar panel de super admin (pagos y catalogo) ([bd8e1d2](https://github.com/Marthinmezaa/muller-home/commit/bd8e1d26f8ae6462da9659f28eeb24c9ce321c1d))
+* agregar panel de super admin (pagos y catalogo) ([cc93cb7](https://github.com/Marthinmezaa/muller-home/commit/cc93cb7375bbb143aee9442a51aea1d1f6bfee25))
+
 ## [0.11.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.10.0...muller-home-v0.11.0) (2026-08-10)
 
 
