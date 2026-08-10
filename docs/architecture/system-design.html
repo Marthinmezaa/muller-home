@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Muller Home — System Design</title>
+<style>
+  :root {
+    --bg: #eae6d9;
+    --paper: #f8f6ee;
+    --ink: #2a2960;
+    --ink-muted: rgba(42, 41, 96, 0.64);
+    --panel: #ffffff;
+    --panel-soft: #f1efe0;
+    --line: rgba(42, 41, 96, 0.22);
+    --grid: rgba(42, 41, 96, 0.075);
+    --accent: #c9930f;
+    --accent-soft: rgba(201, 147, 15, 0.14);
+    --shadow: rgba(30, 28, 60, 0.28);
+
+    --font-display: "Segoe UI Semibold", "Helvetica Neue", Arial, sans-serif;
+    --font-label: ui-monospace, "SF Mono", "Cascadia Code", "Consolas", "Roboto Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a2143;
+      --paper: #0f2c58;
+      --ink: #eef0e2;
+      --ink-muted: rgba(238, 240, 226, 0.66);
+      --panel: rgba(255, 255, 255, 0.055);
+      --panel-soft: rgba(255, 255, 255, 0.03);
+      --line: rgba(238, 240, 226, 0.28);
+      --grid: rgba(238, 240, 226, 0.08);
+      --accent: #f0c43e;
+      --accent-soft: rgba(240, 196, 62, 0.16);
+      --shadow: rgba(0, 0, 0, 0.45);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0a2143;
+    --paper: #0f2c58;
+    --ink: #eef0e2;
+    --ink-muted: rgba(238, 240, 226, 0.66);
+    --panel: rgba(255, 255, 255, 0.055);
+    --panel-soft: rgba(255, 255, 255, 0.03);
+    --line: rgba(238, 240, 226, 0.28);
+    --grid: rgba(238, 240, 226, 0.08);
+    --accent: #f0c43e;
+    --accent-soft: rgba(240, 196, 62, 0.16);
+    --shadow: rgba(0, 0, 0, 0.45);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: var(--font-label);
+    display: flex;
+    justify-content: center;
+    padding: 48px 20px 64px;
+  }
+
+  main {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .kicker {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    padding: 0 4px;
+  }
+
+  .poster {
+    position: relative;
+    background: var(--paper);
+    border: 1.5px solid var(--ink);
+    box-shadow: 0 18px 40px -18px var(--shadow);
+    padding: 30px 30px 26px;
+  }
+
+  .tick-tl, .tick-tr, .tick-bl, .tick-br {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+    display: block;
+  }
+  .tick-tl { top: 8px; left: 8px; border-top: 1.5px solid var(--ink); border-left: 1.5px solid var(--ink); }
+  .tick-tr { top: 8px; right: 8px; border-top: 1.5px solid var(--ink); border-right: 1.5px solid var(--ink); }
+  .tick-bl { bottom: 8px; left: 8px; border-bottom: 1.5px solid var(--ink); border-left: 1.5px solid var(--ink); }
+  .tick-br { bottom: 8px; right: 8px; border-bottom: 1.5px solid var(--ink); border-right: 1.5px solid var(--ink); }
+
+  .poster-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 16px;
+    margin-bottom: 12px;
+    border-bottom: 1.5px solid var(--ink);
+  }
+
+  .poster-head svg.mark { flex: none; color: var(--ink); }
+
+  .poster-title h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .poster-title p {
+    margin: 3px 0 0;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    letter-spacing: 0.01em;
+  }
+
+  figure { margin: 0; }
+
+  svg.diagram { display: block; width: 100%; height: auto; color: var(--ink); }
+
+  svg.diagram text { fill: var(--ink); font-family: var(--font-label); }
+  .t-eyebrow { font-size: 11px; letter-spacing: 0.09em; fill: var(--ink-muted); text-transform: uppercase; }
+  .t-title   { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
+  .t-body    { font-size: 11.5px; }
+  .t-sub     { font-size: 10.5px; fill: var(--ink-muted); }
+  .t-note    { font-size: 10px; fill: var(--ink-muted); }
+  .t-accent  { fill: var(--accent); font-weight: 700; }
+
+  .box       { fill: var(--panel); stroke: var(--ink); stroke-width: 1.4; }
+  .box-frame { fill: var(--panel-soft); stroke: var(--ink); stroke-width: 1.6; }
+  .box-pill  { fill: var(--panel); stroke: var(--ink); stroke-width: 1.2; }
+  .rule      { stroke: var(--line); stroke-width: 1; }
+
+  .arrow      { stroke: var(--ink); stroke-width: 1.6; fill: none; }
+  .arrow-gold { stroke: var(--accent); stroke-width: 3.2; fill: none; }
+  .arrow-dash { stroke: var(--ink); stroke-width: 1.3; fill: none; stroke-dasharray: 5 5; opacity: 0.75; }
+
+  figcaption {
+    padding: 2px 6px 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink-muted);
+    max-width: 68ch;
+  }
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker"><span>Muller Home</span><span>MVP — Fase 1</span></p>
+
+  <div class="poster">
+    <span class="tick-tl"></span><span class="tick-tr"></span>
+    <span class="tick-bl"></span><span class="tick-br"></span>
+
+    <div class="poster-head">
+      <svg class="mark" width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+        <polygon points="4,30 30,30 8,6" fill="none" stroke="currentColor" stroke-width="1.6" />
+        <line x1="9" y1="24" x2="14" y2="24" stroke="currentColor" stroke-width="1.2" />
+        <line x1="11" y1="19" x2="16" y2="19" stroke="currentColor" stroke-width="1.2" />
+        <line x1="13" y1="14" x2="18" y2="14" stroke="currentColor" stroke-width="1.2" />
+      </svg>
+      <div class="poster-title">
+        <h1>Muller Home — System Design</h1>
+        <p>Cómo se mueve un request real: del browser al monolito NestJS, a Postgres y R2 — y qué queda afuera del flujo.</p>
+      </div>
+    </div>
+
+    <figure>
+      <svg class="diagram" viewBox="0 0 1000 1300" role="img" aria-label="Diagrama de arquitectura de Muller Home: visitantes y usuarios con sesión llegan a Next.js, que sirve el portal público por Server Components con fetch sin cookie y sirve el panel autenticado por Client Components que llaman directo a la API del browser con la cookie de sesión, ruta resaltada en dorado porque el server de Next no puede leerla. La API es un monolito NestJS con guards de sesión y rol, y cuatro módulos que hablan directo con Prisma. Postgres y Cloudflare R2 son la capa de datos. WhatsApp y GitHub Actions quedan fuera del flujo de requests.">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" style="fill:var(--ink)" />
+          </marker>
+          <marker id="arrow-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)" />
+          </marker>
+        </defs>
+
+        <!-- Row A: clients -->
+        <rect x="130" y="40" width="340" height="80" class="box" />
+        <text x="300" y="72" text-anchor="middle" class="t-title">VISITANTE</text>
+        <text x="300" y="92" text-anchor="middle" class="t-sub">sin login · browser</text>
+
+        <rect x="530" y="40" width="340" height="80" class="box" />
+        <text x="700" y="66" text-anchor="middle" class="t-title">ASESOR / FRANQUICIA /</text>
+        <text x="700" y="82" text-anchor="middle" class="t-title">SUPER ADMIN</text>
+        <text x="700" y="100" text-anchor="middle" class="t-sub">con sesión · cookie httpOnly</text>
+
+        <line x1="300" y1="120" x2="300" y2="158" class="arrow" marker-end="url(#arrow)" />
+        <line x1="700" y1="120" x2="700" y2="158" class="arrow" marker-end="url(#arrow)" />
+
+        <!-- Row B: apps/web -->
+        <rect x="60" y="160" width="880" height="300" class="box-frame" />
+        <text x="90" y="187" class="t-eyebrow">apps/web — Next.js 16 (App Router)</text>
+        <line x1="80" y1="200" x2="920" y2="200" class="rule" />
+
+        <rect x="90" y="216" width="380" height="222" class="box" />
+        <text x="280" y="240" text-anchor="middle" class="t-title">SERVER COMPONENTS</text>
+        <text x="280" y="257" text-anchor="middle" class="t-sub">SSR · fetch sin cache, sin cookie</text>
+        <line x1="108" y1="269" x2="452" y2="269" class="rule" />
+        <text x="112" y="292" class="t-body">/  →  buscador + mapa</text>
+        <text x="112" y="314" class="t-body">/propiedades/[id]  →  ficha</text>
+        <text x="112" y="336" class="t-body">/aceptar-invitacion  →  server</text>
+        <text x="112" y="358" class="t-note">(lee searchParams como Promise,</text>
+        <text x="112" y="372" class="t-note"> delega el form a un client component)</text>
+        <text x="112" y="404" class="t-note">corre en el server de Next —</text>
+        <text x="112" y="418" class="t-note">nunca ve la cookie de sesión</text>
+
+        <rect x="510" y="216" width="380" height="222" class="box" />
+        <text x="700" y="240" text-anchor="middle" class="t-title">CLIENT COMPONENTS</text>
+        <text x="700" y="257" text-anchor="middle" class="t-sub">'use client' · corre en el browser</text>
+        <line x1="528" y1="269" x2="872" y2="269" class="rule" />
+        <text x="532" y="292" class="t-body">/login</text>
+        <text x="532" y="314" class="t-body">/panel  →  propiedades, leads</text>
+        <text x="532" y="336" class="t-body">/panel/equipo, /panel/bajas</text>
+        <text x="532" y="358" class="t-body">(solo franchise_admin)</text>
+        <text x="532" y="404" class="t-note">fetch(..., &#123; credentials: 'include' &#125;)</text>
+        <text x="532" y="418" class="t-accent">llama a la API directo, sin pasar</text>
+
+        <!-- arrows web -> api -->
+        <line x1="280" y1="460" x2="280" y2="498" class="arrow" marker-end="url(#arrow)" />
+        <text x="292" y="484" class="t-note">SSR, público</text>
+
+        <path d="M700,438 L700,478 L700,498" class="arrow-gold" marker-end="url(#arrow-gold)" />
+        <text x="712" y="472" class="t-accent">cookie httpOnly — Next no</text>
+        <text x="712" y="486" class="t-accent">la puede leer server-side</text>
+
+        <!-- Row C: apps/api -->
+        <rect x="60" y="500" width="880" height="300" class="box-frame" />
+        <text x="90" y="527" class="t-eyebrow">apps/api — NestJS (monolito modular, un solo proceso)</text>
+        <line x1="80" y1="540" x2="920" y2="540" class="rule" />
+
+        <rect x="90" y="556" width="820" height="46" class="box" />
+        <text x="500" y="584" text-anchor="middle" class="t-body">SessionAuthGuard  →  RolesGuard (@Roles)</text>
+
+        <!-- module pills -->
+        <rect x="90" y="624" width="190" height="92" class="box-pill" />
+        <text x="185" y="652" text-anchor="middle" class="t-title">auth</text>
+        <text x="185" y="670" text-anchor="middle" class="t-sub">sesión · roles</text>
+        <text x="185" y="684" text-anchor="middle" class="t-sub">invitaciones</text>
+        <text x="185" y="704" text-anchor="middle" class="t-note">Ctrl → Svc → Prisma</text>
+
+        <rect x="300" y="624" width="190" height="92" class="box-pill" />
+        <text x="395" y="652" text-anchor="middle" class="t-title">packages</text>
+        <text x="395" y="670" text-anchor="middle" class="t-sub">compra · comprobante</text>
+        <text x="395" y="684" text-anchor="middle" class="t-sub">cupo FIFO</text>
+        <text x="395" y="704" text-anchor="middle" class="t-note">Ctrl → Svc → Prisma</text>
+
+        <rect x="510" y="624" width="190" height="92" class="box-pill" />
+        <text x="605" y="652" text-anchor="middle" class="t-title">properties</text>
+        <text x="605" y="670" text-anchor="middle" class="t-sub">alta · media · estado</text>
+        <text x="605" y="684" text-anchor="middle" class="t-sub">bajas</text>
+        <text x="605" y="704" text-anchor="middle" class="t-note">Ctrl → Svc → Prisma</text>
+
+        <rect x="720" y="624" width="190" height="92" class="box-pill" />
+        <text x="815" y="652" text-anchor="middle" class="t-title">leads</text>
+        <text x="815" y="670" text-anchor="middle" class="t-sub">CRM básico</text>
+        <text x="815" y="684" text-anchor="middle" class="t-sub">vistas</text>
+        <text x="815" y="704" text-anchor="middle" class="t-note">Ctrl → Svc → Prisma</text>
+
+        <text x="500" y="748" text-anchor="middle" class="t-note">sin puertos ni adaptadores — cada módulo habla directo con Prisma / R2 (monolito por capas, no hexagonal estricto)</text>
+        <text x="500" y="764" text-anchor="middle" class="t-note">scopeFilter por rol: dueño → su equipo (franchise_admin) → todo (super_admin), repetido en properties y leads</text>
+
+        <!-- arrows api -> data -->
+        <line x1="280" y1="800" x2="280" y2="838" class="arrow" marker-end="url(#arrow)" />
+        <line x1="720" y1="800" x2="720" y2="838" class="arrow" marker-end="url(#arrow)" />
+
+        <!-- Row D: data -->
+        <rect x="90" y="840" width="380" height="150" class="box" />
+        <text x="280" y="866" text-anchor="middle" class="t-title">POSTGRESQL</text>
+        <text x="280" y="883" text-anchor="middle" class="t-sub">vía Prisma ORM</text>
+        <line x1="108" y1="895" x2="452" y2="895" class="rule" />
+        <text x="112" y="916" class="t-body">Neon (dev)</text>
+        <text x="112" y="936" class="t-body">→ VPS propio (prod, futuro)</text>
+        <text x="112" y="964" class="t-note">tabla `session` (connect-pg-simple)</text>
+        <text x="112" y="978" class="t-note">vive acá pero fuera del schema —</text>
+
+        <rect x="530" y="840" width="380" height="150" class="box" />
+        <text x="720" y="866" text-anchor="middle" class="t-title">CLOUDFLARE R2</text>
+        <text x="720" y="883" text-anchor="middle" class="t-sub">API compatible S3</text>
+        <line x1="548" y1="895" x2="892" y2="895" class="rule" />
+        <text x="552" y="916" class="t-body">media de propiedades</text>
+        <text x="552" y="936" class="t-body">+ comprobantes de pago</text>
+        <text x="552" y="964" class="t-note">bucket privado — se resuelve a</text>
+        <text x="552" y="978" class="t-note">URL prefirmada (1h) al leer</text>
+
+        <!-- external zone -->
+        <rect x="60" y="1010" width="880" height="140" class="arrow-dash" style="fill:none" />
+        <text x="500" y="1032" text-anchor="middle" class="t-eyebrow">fuera del flujo de requests</text>
+        <line x1="500" y1="1044" x2="500" y2="1136" class="arrow-dash" />
+
+        <text x="90" y="1064" class="t-title">WHATSAPP</text>
+        <text x="90" y="1082" class="t-body">deep link wa.me, mensaje precargado</text>
+        <text x="90" y="1102" class="t-note">no es una integración — es un enlace manual;</text>
+        <text x="90" y="1116" class="t-note">el lead igual queda registrado en el CRM</text>
+
+        <text x="530" y="1064" class="t-title">GITHUB ACTIONS (CI)</text>
+        <text x="530" y="1082" class="t-body">release-please  →  versiona desde los commits</text>
+        <text x="530" y="1102" class="t-body">devsecops  →  CodeQL + gitleaks</text>
+        <text x="530" y="1120" class="t-note">en cada push / PR a main</text>
+
+        <!-- legend + title block -->
+        <rect x="60" y="1170" width="410" height="100" class="box" />
+        <text x="78" y="1192" class="t-eyebrow">referencias</text>
+        <line x1="78" y1="1206" x2="106" y2="1206" class="arrow" marker-end="url(#arrow)" />
+        <text x="114" y="1210" class="t-note">fetch server-side, sin cookie</text>
+        <line x1="78" y1="1226" x2="106" y2="1226" class="arrow-gold" marker-end="url(#arrow-gold)" />
+        <text x="114" y="1230" class="t-note">fetch del browser, con cookie de sesión</text>
+        <rect x="78" y="1240" width="28" height="12" class="arrow-dash" style="fill:none" />
+        <text x="114" y="1250" class="t-note">manual o CI — no es un request en vivo</text>
+
+        <rect x="490" y="1170" width="450" height="100" class="box" />
+        <line x1="670" y1="1170" x2="670" y2="1270" class="rule" />
+        <line x1="490" y1="1220" x2="940" y2="1220" class="rule" />
+        <text x="504" y="1188" class="t-note">proyecto</text>
+        <text x="504" y="1210" class="t-body">Muller Home</text>
+        <text x="684" y="1188" class="t-note">fase</text>
+        <text x="684" y="1210" class="t-body">MVP — Fase 1</text>
+        <text x="504" y="1238" class="t-note">rev</text>
+        <text x="504" y="1260" class="t-body">v0.11.0</text>
+        <text x="684" y="1238" class="t-note">fecha</text>
+        <text x="684" y="1260" class="t-body">2026-08-10</text>
+      </svg>
+      <figcaption>El request del portal público baja por Server Components sin cookie; el del panel sale directo del browser (línea dorada) porque la cookie de sesión vive en el origen de la API y el server de Next no puede leerla. Adentro, la API es un solo proceso NestJS con cuatro módulos que hablan directo con Prisma — sin capa de puertos/adaptadores.</figcaption>
+    </figure>
+  </div>
+</main>
+</body>
+</html>

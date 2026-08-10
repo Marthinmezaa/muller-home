@@ -2,6 +2,8 @@
 
 Plataforma inmobiliaria multi-rol para Muller Producciones (fotografía/video con drone para propiedades).
 
+Diagrama de arquitectura (visitantes/panel, apps/web, apps/api, Postgres, R2): `docs/architecture/system-design.html`, abrir directo en el navegador.
+
 ## Metodología
 
 - Spec-Driven Development (filosofía Gentle-AI, sin el plugin): spec en `openspec/` aprobada antes de escribir código de cada módulo.
