@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.10.0...muller-home-v0.11.0) (2026-08-10)
+
+
+### Features
+
+* agregar panel de franquicia (equipo, invitaciones y bajas) ([700a65b](https://github.com/Marthinmezaa/muller-home/commit/700a65b3563ddeeba7aebc5dbef5a3f5f23e08d3))
+* agregar panel de franquicia (equipo, invitaciones y bajas) ([21fc6c0](https://github.com/Marthinmezaa/muller-home/commit/21fc6c01f4868b769839efe9768a639d0b77fad3))
+
 ## [0.10.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.9.0...muller-home-v0.10.0) (2026-08-07)
 
 
