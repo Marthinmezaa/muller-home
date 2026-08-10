@@ -45,6 +45,16 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
           <Link href="/panel/leads" className={pathname === '/panel/leads' ? 'text-[#3B3A72]' : 'opacity-70'}>
             Leads
           </Link>
+          {user.role === 'FRANCHISE_ADMIN' && (
+            <>
+              <Link href="/panel/equipo" className={pathname === '/panel/equipo' ? 'text-[#3B3A72]' : 'opacity-70'}>
+                Equipo
+              </Link>
+              <Link href="/panel/bajas" className={pathname === '/panel/bajas' ? 'text-[#3B3A72]' : 'opacity-70'}>
+                Bajas
+              </Link>
+            </>
+          )}
         </nav>
         <div className="flex items-center gap-3 text-sm">
           <span className="opacity-70">{user.fullName}</span>

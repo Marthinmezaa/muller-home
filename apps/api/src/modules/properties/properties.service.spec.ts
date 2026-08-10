@@ -300,3 +300,20 @@ describe('PropertiesService.findMyProperties scoping', () => {
     expect(prisma.property.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: {} }));
   });
 });
+
+describe('PropertiesService.findPendingDeletionRequests scoping', () => {
+  it('reuses the same team scope as findMyProperties', async () => {
+    const { service, prisma } = createService({
+      prisma: { propertyDeletionRequest: { findMany: jest.fn().mockResolvedValue([]) } },
+    });
+    const admin = { id: 'admin-1', role: Role.FRANCHISE_ADMIN, franchiseId: 'franchise-1' } as never;
+
+    await service.findPendingDeletionRequests(admin);
+
+    expect(prisma.propertyDeletionRequest.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { status: PurchaseStatus.PENDING, property: { owner: { franchiseId: 'franchise-1' } } },
+      }),
+    );
+  });
+});

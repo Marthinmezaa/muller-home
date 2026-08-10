@@ -215,6 +215,15 @@ export class PropertiesService {
     return { ownerId: user.id };
   }
 
+  /** Solicitudes de baja pendientes en el alcance del reviewer (mismo scopeFilter que findMyProperties), para el panel de franquicia. */
+  findPendingDeletionRequests(user: User) {
+    return this.prisma.propertyDeletionRequest.findMany({
+      where: { status: PurchaseStatus.PENDING, property: this.scopeFilter(user) },
+      include: { property: { select: { id: true, title: true } }, requestedBy: { select: { fullName: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async requestDeletion(user: User, propertyId: string) {
     const property = await this.findOwnedOrThrow(propertyId);
     if (property.ownerId !== user.id) {

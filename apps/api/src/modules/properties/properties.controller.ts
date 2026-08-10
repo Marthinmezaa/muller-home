@@ -30,6 +30,14 @@ export class PropertiesController {
     return this.propertiesService.findMyProperties(user);
   }
 
+  // Ruta literal, debe ir antes de ':id' para que Nest no la confunda con un id de propiedad.
+  @Get('deletion-requests')
+  @UseGuards(SessionAuthGuard, RolesGuard)
+  @Roles(Role.FRANCHISE_ADMIN, Role.SUPER_ADMIN)
+  findDeletionRequests(@CurrentUser() user: User) {
+    return this.propertiesService.findPendingDeletionRequests(user);
+  }
+
   @Get(':id')
   getDetail(@Param('id') id: string) {
     return this.propertiesService.getPropertyDetail(id);

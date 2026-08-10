@@ -45,6 +45,13 @@ export class AuthController {
     return this.authService.toSafeUser(user);
   }
 
+  @Get('franchise/members')
+  @UseGuards(SessionAuthGuard, RolesGuard)
+  @Roles(Role.FRANCHISE_ADMIN)
+  findFranchiseMembers(@CurrentUser() user: User) {
+    return this.authService.findFranchiseMembers(user);
+  }
+
   @Post('franchise/invite')
   @UseGuards(SessionAuthGuard, RolesGuard)
   @Roles(Role.FRANCHISE_ADMIN)
