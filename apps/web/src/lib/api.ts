@@ -1,4 +1,4 @@
-import type { Lead, Property, PropertyInput, PropertyMedia, SafeUser, SearchFilters } from './types';
+import type { DeletionRequest, FranchiseMember, Lead, Property, PropertyInput, PropertyMedia, SafeUser, SearchFilters } from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
@@ -194,3 +194,62 @@ export async function requestPropertyDeletion(id: string): Promise<void> {
     throw await apiError(res, 'No se pudo pedir la baja');
   }
 }
+
+// --- Panel de franquicia: equipo, invitaciones y solicitudes de baja ---
+
+export async function getFranchiseMembers(): Promise<FranchiseMember[]> {
+  const res = await fetch(`${API_URL}/auth/franchise/members`, { credentials: 'include' });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo cargar el equipo');
+  }
+  return res.json();
+}
+
+export async function createFranchiseInvite(): Promise<{ token: string; expiresAt: string }> {
+  const res = await fetch(`${API_URL}/auth/franchise/invite`, { method: 'POST', credentials: 'include' });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo generar la invitación');
+  }
+  return res.json();
+}
+
+export interface AcceptInviteInput {
+  token: string;
+  email: string;
+  password: string;
+  fullName: string;
+}
+
+export async function acceptInvite(input: AcceptInviteInput): Promise<SafeUser> {
+  const res = await fetch(`${API_URL}/auth/accept-invite`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo completar el registro');
+  }
+  return res.json();
+}
+
+export async function getPendingDeletionRequests(): Promise<DeletionRequest[]> {
+  const res = await fetch(`${API_URL}/properties/deletion-requests`, { credentials: 'include' });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudieron cargar las solicitudes de baja');
+  }
+  return res.json();
+}
+
+async function reviewDeletionRequest(id: string, action: 'approve' | 'reject'): Promise<void> {
+  const res = await fetch(`${API_URL}/properties/deletion-requests/${id}/${action}`, {
+    method: 'PATCH',
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo actualizar la solicitud');
+  }
+}
+
+export const approveDeletionRequest = (id: string) => reviewDeletionRequest(id, 'approve');
+export const rejectDeletionRequest = (id: string) => reviewDeletionRequest(id, 'reject');

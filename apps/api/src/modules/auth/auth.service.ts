@@ -59,6 +59,20 @@ export class AuthService {
     return { token: invite.token, expiresAt: invite.expiresAt };
   }
 
+  async findFranchiseMembers(currentUser: User) {
+    if (!currentUser.franchiseId) {
+      throw new ForbiddenException('El usuario no pertenece a una franquicia');
+    }
+
+    const members = await this.prisma.user.findMany({
+      where: { franchiseId: currentUser.franchiseId },
+      include: { _count: { select: { properties: true } } },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    return members.map((member) => this.toSafeUser(member));
+  }
+
   async acceptInvite(dto: AcceptInviteDto) {
     return this.prisma.$transaction(async (tx) => {
       const invite = await tx.invite.findUnique({ where: { token: dto.token } });
@@ -89,7 +103,7 @@ export class AuthService {
     });
   }
 
-  toSafeUser(user: User) {
+  toSafeUser<T extends User>(user: T) {
     const { passwordHash: _passwordHash, ...safeUser } = user;
     return safeUser;
   }

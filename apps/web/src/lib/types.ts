@@ -84,6 +84,23 @@ export interface SafeUser {
   franchiseId: string | null;
 }
 
+/** Fila de GET /auth/franchise/members — solo para el panel de franquicia. */
+export interface FranchiseMember {
+  id: string;
+  fullName: string;
+  email: string;
+  role: Role;
+  _count: { properties: number };
+}
+
+/** Fila de GET /properties/deletion-requests — solo para el panel de franquicia. */
+export interface DeletionRequest {
+  id: string;
+  createdAt: string;
+  property: { id: string; title: string };
+  requestedBy: { fullName: string };
+}
+
 export interface Lead {
   id: string;
   name: string;
