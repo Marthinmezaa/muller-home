@@ -1,4 +1,16 @@
-import type { DeletionRequest, FranchiseMember, Lead, Property, PropertyInput, PropertyMedia, SafeUser, SearchFilters } from './types';
+import type {
+  DeletionRequest,
+  FranchiseMember,
+  Lead,
+  Package,
+  PackageInput,
+  PackagePurchase,
+  Property,
+  PropertyInput,
+  PropertyMedia,
+  SafeUser,
+  SearchFilters,
+} from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
@@ -253,3 +265,53 @@ async function reviewDeletionRequest(id: string, action: 'approve' | 'reject'): 
 
 export const approveDeletionRequest = (id: string) => reviewDeletionRequest(id, 'approve');
 export const rejectDeletionRequest = (id: string) => reviewDeletionRequest(id, 'reject');
+
+// --- Panel de super admin: pagos de paquetes y catálogo ---
+
+export async function getPackages(): Promise<Package[]> {
+  const res = await fetch(`${API_URL}/packages`, { credentials: 'include' });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo cargar el catálogo');
+  }
+  return res.json();
+}
+
+export async function createPackage(input: PackageInput): Promise<Package> {
+  const res = await fetch(`${API_URL}/packages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo crear el paquete');
+  }
+  return res.json();
+}
+
+export async function getAllPurchases(): Promise<PackagePurchase[]> {
+  const res = await fetch(`${API_URL}/packages/purchases`, { credentials: 'include' });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudieron cargar las compras');
+  }
+  return res.json();
+}
+
+export async function getPurchaseProofUrl(id: string): Promise<string> {
+  const res = await fetch(`${API_URL}/packages/purchases/${id}/proof-url`, { credentials: 'include' });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo cargar el comprobante');
+  }
+  const { url } = await res.json();
+  return url;
+}
+
+async function reviewPurchase(id: string, action: 'approve' | 'reject'): Promise<void> {
+  const res = await fetch(`${API_URL}/packages/purchases/${id}/${action}`, { method: 'PATCH', credentials: 'include' });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo actualizar la compra');
+  }
+}
+
+export const approvePurchase = (id: string) => reviewPurchase(id, 'approve');
+export const rejectPurchase = (id: string) => reviewPurchase(id, 'reject');

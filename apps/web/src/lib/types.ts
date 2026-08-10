@@ -12,6 +12,21 @@ export type MediaType = 'PHOTO' | 'VIDEO';
 
 export type Role = 'ADVISOR' | 'FRANCHISE_ADMIN' | 'SUPER_ADMIN';
 
+export type BillingType = 'ONE_TIME' | 'MONTHLY';
+
+export type PurchaseStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export const BILLING_TYPE_LABELS: Record<BillingType, string> = {
+  ONE_TIME: 'Pago único',
+  MONTHLY: 'Mensual',
+};
+
+export const PURCHASE_STATUS_LABELS: Record<PurchaseStatus, string> = {
+  PENDING: 'Pendiente',
+  APPROVED: 'Aprobada',
+  REJECTED: 'Rechazada',
+};
+
 export const PROPERTY_STATUS_LABELS: Record<PropertyStatus, string> = {
   DRAFT: 'Borrador',
   PUBLISHED: 'Publicada',
@@ -99,6 +114,38 @@ export interface DeletionRequest {
   createdAt: string;
   property: { id: string; title: string };
   requestedBy: { fullName: string };
+}
+
+export interface Package {
+  id: string;
+  name: string;
+  billingType: BillingType;
+  price: string;
+  propertiesQuota: number;
+  productionsQuota: number;
+  maxAdvisors: number;
+  active: boolean;
+}
+
+/** Fila de GET /packages/purchases — solo para el panel de super admin. */
+export interface PackagePurchase {
+  id: string;
+  status: PurchaseStatus;
+  propertiesQuota: number;
+  propertiesUsed: number;
+  createdAt: string;
+  package: Pick<Package, 'id' | 'name' | 'billingType' | 'price'>;
+  buyer: { fullName: string; email: string };
+}
+
+/** Campos del formulario de alta de paquete — mismos que CreatePackageDto de la API. */
+export interface PackageInput {
+  name: string;
+  billingType: BillingType;
+  price: number;
+  propertiesQuota: number;
+  productionsQuota: number;
+  maxAdvisors?: number;
 }
 
 export interface Lead {
