@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.12.0...muller-home-v0.13.0) (2026-08-11)
+
+
+### Features
+
+* agregar pantalla de compra de paquete para asesor y franquicia ([daeb257](https://github.com/Marthinmezaa/muller-home/commit/daeb257886d387f9c91c7cfb7926a6fcf80b4098))
+* agregar pantalla de compra de paquete para asesor y franquicia ([0519ec1](https://github.com/Marthinmezaa/muller-home/commit/0519ec1f6cb99fecb434e06568f20cc0ecfa093e))
+
 ## [0.12.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.11.0...muller-home-v0.12.0) (2026-08-10)
 
 
