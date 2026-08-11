@@ -6,8 +6,6 @@ on:
   push:
     branches: [main]
 
-# ponytail: CodeQL fuera hasta que exista código JS/TS real (falla si no hay
-# nada que indexar). Volver a agregar el job cuando arranque apps/api o apps/web.
 jobs:
   secrets-scan:
     name: Secret Scanning (gitleaks)
@@ -19,3 +17,17 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          build-mode: none
+      - uses: github/codeql-action/analyze@v3

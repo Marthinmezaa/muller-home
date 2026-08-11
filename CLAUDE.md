@@ -65,7 +65,7 @@ Plazos: MVP 1 mes, proyecto completo 3 meses.
 ## Estado actual
 
 - Estructura de repo y tooling (git, npm workspaces, release-please, devsecops) creados.
-- CodeQL pausado en devsecops.yml: falla si no hay código JS/TS que indexar. Reactivar cuando exista código real en apps/api o apps/web.
+- CodeQL reactivado en devsecops.yml (job `codeql`, `languages: javascript-typescript`, `build-mode: none`) — quedó pausado desde el arranque del repo hasta que hubiera código real que indexar; ya lo hay en `apps/api` y `apps/web`.
 - Modelo de datos cerrado (cupo de franquicia confirmado como compartido).
 - Spec de auth/roles aprobada y **implementada** (openspec/changes/auth-roles/spec.md): módulo de auth completo (register/login/logout/me, invitación de asesor por link, guards de sesión y de rol).
 - Spec de paquetes aprobada y **implementada** (openspec/changes/packages/spec.md, PR #9, release 0.3.0): catálogo de paquetes, compra con comprobante a R2, aprobación/rechazo manual de Super Admin, promoción automática a `franchise_admin` en compra multi-asesor, cálculo y consumo de cupo FIFO (`consumeQuota` en `packages.service.ts`, con guarda optimista contra carreras) — queda lista para que el futuro módulo de propiedades la llame al publicar.
