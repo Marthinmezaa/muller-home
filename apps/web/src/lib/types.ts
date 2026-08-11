@@ -27,6 +27,13 @@ export const PURCHASE_STATUS_LABELS: Record<PurchaseStatus, string> = {
   REJECTED: 'Rechazada',
 };
 
+/** Combinar con `badge` de lib/ui.ts. Oro con dark:text-brand-gold en PENDING: ver PR #37 (contraste en dark mode). */
+export const PURCHASE_STATUS_STYLES: Record<PurchaseStatus, string> = {
+  PENDING: 'bg-brand-gold/20 text-[#8a6b0a] dark:text-brand-gold',
+  APPROVED: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
+  REJECTED: 'bg-red-500/15 text-red-700 dark:text-red-400',
+};
+
 export const PROPERTY_STATUS_LABELS: Record<PropertyStatus, string> = {
   DRAFT: 'Borrador',
   PUBLISHED: 'Publicada',

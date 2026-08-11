@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getMe, getMyProperties, getQuota } from '@/lib/api';
 import { PROPERTY_STATUS_LABELS, type Property } from '@/lib/types';
+import { badgeNeutral, buttonPrimary, cardInteractive, linkAccent } from '@/lib/ui';
 
 export default function PanelPage() {
   const [properties, setProperties] = useState<Property[] | null>(null);
@@ -25,8 +26,8 @@ export default function PanelPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-3">
-        <Link href="/panel/propiedades/nueva" className="w-fit rounded bg-brand-navy px-4 py-2 text-sm text-white">
+      <div className="flex flex-wrap items-center gap-3">
+        <Link href="/panel/propiedades/nueva" className={`w-fit ${buttonPrimary}`}>
           Cargar propiedad
         </Link>
         {quota !== null && (
@@ -36,7 +37,7 @@ export default function PanelPage() {
             {quota === 0 && (
               <>
                 {' — '}
-                <Link href="/panel/comprar" className="text-brand-navy underline dark:text-brand-gold">
+                <Link href="/panel/comprar" className={linkAccent}>
                   comprar más
                 </Link>
               </>
@@ -52,11 +53,7 @@ export default function PanelPage() {
       {properties && properties.length > 0 && (
         <div className="flex flex-col gap-2">
           {properties.map((property) => (
-            <Link
-              key={property.id}
-              href={`/panel/propiedades/${property.id}`}
-              className="flex items-center justify-between rounded border border-black/10 p-4 transition hover:border-black/30 dark:border-white/15 dark:hover:border-white/40"
-            >
+            <Link key={property.id} href={`/panel/propiedades/${property.id}`} className={`flex items-center justify-between ${cardInteractive}`}>
               <div>
                 <p className="font-medium">{property.title}</p>
                 <p className="text-xs opacity-70">{property.city}</p>
@@ -64,9 +61,7 @@ export default function PanelPage() {
               <div className="flex items-center gap-4 text-sm">
                 <span className="opacity-70">{property.viewsCount} vistas</span>
                 <span className="opacity-70">{property._count?.leads ?? 0} leads</span>
-                <span className="rounded bg-black/5 px-2 py-1 text-xs font-medium dark:bg-white/10">
-                  {PROPERTY_STATUS_LABELS[property.status]}
-                </span>
+                <span className={badgeNeutral}>{PROPERTY_STATUS_LABELS[property.status]}</span>
               </div>
             </Link>
           ))}

@@ -21,12 +21,12 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-6">
-      <Link href="/" className="text-sm opacity-70 hover:underline">
+      <Link href="/" className="w-fit text-sm opacity-70 transition-opacity hover:opacity-100 hover:underline">
         ← Volver al buscador
       </Link>
 
       {closedLabel && (
-        <p className="rounded bg-black/80 px-3 py-2 text-sm font-medium text-white">
+        <p className="rounded-lg bg-black/80 px-3 py-2 text-sm font-medium text-white">
           Esta propiedad ya fue {closedLabel.toLowerCase()}, pero la dejamos visible para que conozcas el trabajo de
           nuestros asesores.
         </p>
@@ -40,10 +40,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 key={item.id}
                 src={item.url}
                 controls
-                className="col-span-2 aspect-video w-full rounded sm:col-span-3"
+                className="col-span-2 aspect-video w-full rounded-lg sm:col-span-3"
               />
             ) : (
-              <div key={item.id} className="relative aspect-[4/3] overflow-hidden rounded">
+              <div key={item.id} className="relative aspect-[4/3] overflow-hidden rounded-lg">
                 <Image src={item.url} alt={property.title} fill className="object-cover" unoptimized />
               </div>
             ),
@@ -56,8 +56,8 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           {OPERATION_TYPE_LABELS[property.operationType]} · {PROPERTY_TYPE_LABELS[property.propertyType]} ·{' '}
           {property.city}
         </p>
-        <h1 className="text-2xl font-semibold">{property.title}</h1>
-        <p className="text-xl font-semibold">Gs. {formatPrice(property.price)}</p>
+        <h1 className="text-2xl font-bold tracking-tight">{property.title}</h1>
+        <p className="text-2xl font-bold text-brand-navy dark:text-brand-gold">Gs. {formatPrice(property.price)}</p>
         <p className="text-sm opacity-70">
           {property.rooms} ambientes · {property.bathrooms} baños · {property.areaM2} m² · {property.address}
         </p>

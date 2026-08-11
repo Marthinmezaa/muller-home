@@ -2,17 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { getMyPurchases, getPackages, purchasePackage, resendPurchaseProof } from '@/lib/api';
-import { BILLING_TYPE_LABELS, PURCHASE_STATUS_LABELS, type MyPurchase, type Package, type PurchaseStatus } from '@/lib/types';
+import { BILLING_TYPE_LABELS, PURCHASE_STATUS_LABELS, PURCHASE_STATUS_STYLES, type MyPurchase, type Package } from '@/lib/types';
+import { badge, buttonPrimarySm, buttonSecondarySm, card, linkAccent } from '@/lib/ui';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('es-PY', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
-
-const STATUS_STYLES: Record<PurchaseStatus, string> = {
-  PENDING: 'bg-brand-gold/20 text-[#8a6b0a] dark:text-brand-gold',
-  APPROVED: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-  REJECTED: 'bg-red-500/15 text-red-700 dark:text-red-400',
-};
 
 /** Formulario de subida de comprobante, compartido entre "comprar" y "reenviar". */
 function ProofForm({ busy, onSubmit }: { busy: boolean; onSubmit: (file: File) => void }) {
@@ -26,11 +21,7 @@ function ProofForm({ busy, onSubmit }: { busy: boolean; onSubmit: (file: File) =
         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
         className="text-sm"
       />
-      <button
-        disabled={!file || busy}
-        onClick={() => file && onSubmit(file)}
-        className="rounded bg-brand-navy px-3 py-1 text-sm text-white disabled:opacity-50"
-      >
+      <button disabled={!file || busy} onClick={() => file && onSubmit(file)} className={buttonPrimarySm}>
         {busy ? 'Enviando…' : 'Confirmar'}
       </button>
     </div>
@@ -85,11 +76,11 @@ export default function PanelComprarPage() {
       {error && <p className="text-sm text-red-600">{error}</p>}
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium">Catálogo</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Catálogo</h2>
         {!packages && <p className="opacity-70">Cargando…</p>}
         {packages?.length === 0 && <p className="opacity-70">No hay paquetes disponibles.</p>}
         {packages?.map((pkg) => (
-          <div key={pkg.id} className="flex flex-col gap-3 rounded border border-black/10 p-4 dark:border-white/15">
+          <div key={pkg.id} className={`flex flex-col gap-3 ${card}`}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">{pkg.name}</p>
@@ -99,11 +90,8 @@ export default function PanelComprarPage() {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <p className="text-sm font-medium">Gs. {Number(pkg.price).toLocaleString('es-PY')}</p>
-                <button
-                  onClick={() => setOpenPackageId(openPackageId === pkg.id ? null : pkg.id)}
-                  className="rounded border border-black/10 px-3 py-1 text-sm dark:border-white/15"
-                >
+                <p className="text-sm font-semibold text-brand-navy dark:text-brand-gold">Gs. {Number(pkg.price).toLocaleString('es-PY')}</p>
+                <button onClick={() => setOpenPackageId(openPackageId === pkg.id ? null : pkg.id)} className={buttonSecondarySm}>
                   Comprar
                 </button>
               </div>
@@ -119,11 +107,11 @@ export default function PanelComprarPage() {
       </section>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium">Mis compras</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Mis compras</h2>
         {!purchases && <p className="opacity-70">Cargando…</p>}
         {purchases?.length === 0 && <p className="opacity-70">Todavía no compraste ningún paquete.</p>}
         {purchases?.map((purchase) => (
-          <div key={purchase.id} className="flex flex-col gap-2 rounded border border-black/10 p-4 dark:border-white/15">
+          <div key={purchase.id} className={`flex flex-col gap-2 ${card}`}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">{purchase.package.name}</p>
@@ -131,16 +119,14 @@ export default function PanelComprarPage() {
                   {formatDate(purchase.createdAt)} · {purchase.propertiesUsed}/{purchase.propertiesQuota} propiedades usadas
                 </p>
               </div>
-              <span className={`rounded px-2 py-1 text-xs font-medium ${STATUS_STYLES[purchase.status]}`}>
-                {PURCHASE_STATUS_LABELS[purchase.status]}
-              </span>
+              <span className={`${badge} ${PURCHASE_STATUS_STYLES[purchase.status]}`}>{PURCHASE_STATUS_LABELS[purchase.status]}</span>
             </div>
             {purchase.status === 'REJECTED' && (
               <div className="flex flex-col gap-1 border-t border-black/10 pt-2 dark:border-white/15">
                 {resendingId === purchase.id ? (
                   <ProofForm busy={busy} onSubmit={(file) => handleResend(purchase.id, file)} />
                 ) : (
-                  <button onClick={() => setResendingId(purchase.id)} className="w-fit text-sm text-brand-navy underline dark:text-brand-gold">
+                  <button onClick={() => setResendingId(purchase.id)} className={`w-fit text-sm ${linkAccent}`}>
                     Reenviar comprobante
                   </button>
                 )}

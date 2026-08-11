@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createPackage, getPackages } from '@/lib/api';
 import { BILLING_TYPE_LABELS, type BillingType, type Package, type PackageInput } from '@/lib/types';
-
-const inputClass = 'rounded border border-black/10 px-3 py-2 dark:border-white/15';
+import { buttonPrimary, card, cardInteractive, input } from '@/lib/ui';
 
 const emptyForm: PackageInput = {
   name: '',
@@ -47,14 +46,10 @@ export default function PanelCatalogoPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded border border-black/10 p-4 dark:border-white/15">
-        <p className="text-sm font-medium">Crear paquete</p>
-        <input required placeholder="Nombre" value={form.name} onChange={(e) => set('name', e.target.value)} className={inputClass} />
-        <select
-          value={form.billingType}
-          onChange={(e) => set('billingType', e.target.value as BillingType)}
-          className={inputClass}
-        >
+      <form onSubmit={handleSubmit} className={`flex flex-col gap-3 ${card}`}>
+        <p className="text-lg font-semibold tracking-tight">Crear paquete</p>
+        <input required placeholder="Nombre" value={form.name} onChange={(e) => set('name', e.target.value)} className={input} />
+        <select value={form.billingType} onChange={(e) => set('billingType', e.target.value as BillingType)} className={input}>
           {Object.entries(BILLING_TYPE_LABELS).map(([value, label]) => (
             <option key={value} value={value}>
               {label}
@@ -68,7 +63,7 @@ export default function PanelCatalogoPage() {
           placeholder="Precio"
           value={form.price}
           onChange={(e) => set('price', Number(e.target.value))}
-          className={inputClass}
+          className={input}
         />
         <input
           required
@@ -77,7 +72,7 @@ export default function PanelCatalogoPage() {
           placeholder="Cupo de propiedades"
           value={form.propertiesQuota}
           onChange={(e) => set('propertiesQuota', Number(e.target.value))}
-          className={inputClass}
+          className={input}
         />
         <input
           required
@@ -86,7 +81,7 @@ export default function PanelCatalogoPage() {
           placeholder="Cupo de producciones"
           value={form.productionsQuota}
           onChange={(e) => set('productionsQuota', Number(e.target.value))}
-          className={inputClass}
+          className={input}
         />
         <input
           type="number"
@@ -94,13 +89,9 @@ export default function PanelCatalogoPage() {
           placeholder="Máximo de asesores (franquicia)"
           value={form.maxAdvisors}
           onChange={(e) => set('maxAdvisors', Number(e.target.value))}
-          className={inputClass}
+          className={input}
         />
-        <button
-          type="submit"
-          disabled={status === 'sending'}
-          className="w-fit rounded bg-brand-navy px-4 py-2 text-sm text-white disabled:opacity-50"
-        >
+        <button type="submit" disabled={status === 'sending'} className={`w-fit ${buttonPrimary}`}>
           {status === 'sending' ? 'Creando…' : 'Crear paquete'}
         </button>
         {status === 'error' && error && <p className="text-sm text-red-600">{error}</p>}
@@ -112,7 +103,7 @@ export default function PanelCatalogoPage() {
       {packages && packages.length > 0 && (
         <div className="flex flex-col gap-2">
           {packages.map((pkg) => (
-            <div key={pkg.id} className="flex items-center justify-between rounded border border-black/10 p-4 dark:border-white/15">
+            <div key={pkg.id} className={`flex items-center justify-between ${cardInteractive}`}>
               <div>
                 <p className="font-medium">{pkg.name}</p>
                 <p className="text-xs opacity-70">
@@ -120,7 +111,7 @@ export default function PanelCatalogoPage() {
                   {pkg.maxAdvisors > 1 ? ` · hasta ${pkg.maxAdvisors} asesores` : ''}
                 </p>
               </div>
-              <p className="text-sm font-medium">Gs. {Number(pkg.price).toLocaleString('es-PY')}</p>
+              <p className="text-sm font-semibold text-brand-navy dark:text-brand-gold">Gs. {Number(pkg.price).toLocaleString('es-PY')}</p>
             </div>
           ))}
         </div>

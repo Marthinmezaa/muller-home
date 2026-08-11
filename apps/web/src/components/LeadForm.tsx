@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { createLead } from '@/lib/api';
+import { buttonPrimary, card, input } from '@/lib/ui';
 
 function whatsappLink(phone: string, message: string): string {
   return `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
@@ -37,35 +38,32 @@ export function LeadForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2 rounded border border-black/10 p-4">
-      <h2 className="font-semibold">Contactar a {advisorName}</h2>
-      <input
-        required
-        placeholder="Tu nombre"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        className="rounded border border-black/10 px-3 py-2"
-      />
-      <input
-        required
-        placeholder="Tu teléfono"
-        value={phone}
-        onChange={(event) => setPhone(event.target.value)}
-        className="rounded border border-black/10 px-3 py-2"
-      />
+    <form onSubmit={handleSubmit} className={`flex flex-col gap-3 ${card}`}>
+      <h2 className="text-lg font-semibold tracking-tight">Contactar a {advisorName}</h2>
+
+      <label className="sr-only" htmlFor="lead-name">
+        Tu nombre
+      </label>
+      <input id="lead-name" required placeholder="Tu nombre" value={name} onChange={(event) => setName(event.target.value)} className={input} />
+
+      <label className="sr-only" htmlFor="lead-phone">
+        Tu teléfono
+      </label>
+      <input id="lead-phone" required placeholder="Tu teléfono" value={phone} onChange={(event) => setPhone(event.target.value)} className={input} />
+
+      <label className="sr-only" htmlFor="lead-message">
+        Mensaje
+      </label>
       <textarea
+        id="lead-message"
         required
         placeholder="Contame qué te interesa de la propiedad"
         value={message}
         onChange={(event) => setMessage(event.target.value)}
         rows={3}
-        className="rounded border border-black/10 px-3 py-2"
+        className={input}
       />
-      <button
-        type="submit"
-        disabled={status === 'sending'}
-        className="w-fit rounded bg-brand-navy px-4 py-2 text-white disabled:opacity-50"
-      >
+      <button type="submit" disabled={status === 'sending'} className={`w-fit ${buttonPrimary}`}>
         {status === 'sending' ? 'Enviando…' : 'Enviar y abrir WhatsApp'}
       </button>
       {status === 'error' && <p className="text-sm text-red-600">No se pudo enviar el mensaje, intentá de nuevo.</p>}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getMyLeads } from '@/lib/api';
 import type { Lead } from '@/lib/types';
+import { card } from '@/lib/ui';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('es-PY', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -31,7 +32,7 @@ export default function PanelLeadsPage() {
   return (
     <div className="flex flex-col gap-2">
       {leads.map((lead) => (
-        <div key={lead.id} className="rounded border border-black/10 p-4 dark:border-white/15">
+        <div key={lead.id} className={card}>
           <div className="flex items-center justify-between">
             <p className="font-medium">{lead.name}</p>
             <p className="text-xs opacity-70">{formatDate(lead.createdAt)}</p>

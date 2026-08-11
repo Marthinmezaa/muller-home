@@ -2,17 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { approvePurchase, getAllPurchases, getPurchaseProofUrl, rejectPurchase } from '@/lib/api';
-import { PURCHASE_STATUS_LABELS, type PackagePurchase, type PurchaseStatus } from '@/lib/types';
+import { PURCHASE_STATUS_LABELS, PURCHASE_STATUS_STYLES, type PackagePurchase } from '@/lib/types';
+import { badge, buttonPrimarySm, buttonSecondarySm, card } from '@/lib/ui';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('es-PY', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
-
-const STATUS_STYLES: Record<PurchaseStatus, string> = {
-  PENDING: 'bg-brand-gold/20 text-[#8a6b0a] dark:text-brand-gold',
-  APPROVED: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-  REJECTED: 'bg-red-500/15 text-red-700 dark:text-red-400',
-};
 
 export default function PanelPagosPage() {
   const [purchases, setPurchases] = useState<PackagePurchase[] | null>(null);
@@ -61,7 +56,7 @@ export default function PanelPagosPage() {
   return (
     <div className="flex flex-col gap-2">
       {purchases.map((purchase) => (
-        <div key={purchase.id} className="flex flex-col gap-2 rounded border border-black/10 p-4 dark:border-white/15">
+        <div key={purchase.id} className={`flex flex-col gap-2 ${card}`}>
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">{purchase.package.name}</p>
@@ -69,28 +64,18 @@ export default function PanelPagosPage() {
                 {purchase.buyer.fullName} ({purchase.buyer.email}) · {formatDate(purchase.createdAt)}
               </p>
             </div>
-            <span className={`rounded px-2 py-1 text-xs font-medium ${STATUS_STYLES[purchase.status]}`}>
-              {PURCHASE_STATUS_LABELS[purchase.status]}
-            </span>
+            <span className={`${badge} ${PURCHASE_STATUS_STYLES[purchase.status]}`}>{PURCHASE_STATUS_LABELS[purchase.status]}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <button onClick={() => handleViewProof(purchase.id)} className="rounded border border-black/10 px-3 py-1 dark:border-white/15">
+            <button onClick={() => handleViewProof(purchase.id)} className={buttonSecondarySm}>
               Ver comprobante
             </button>
             {purchase.status === 'PENDING' && (
               <>
-                <button
-                  onClick={() => handleReview(purchase.id, 'approve')}
-                  disabled={busyId === purchase.id}
-                  className="rounded bg-brand-navy px-3 py-1 text-white disabled:opacity-50"
-                >
+                <button onClick={() => handleReview(purchase.id, 'approve')} disabled={busyId === purchase.id} className={buttonPrimarySm}>
                   Aprobar
                 </button>
-                <button
-                  onClick={() => handleReview(purchase.id, 'reject')}
-                  disabled={busyId === purchase.id}
-                  className="rounded border border-black/10 px-3 py-1 dark:border-white/15"
-                >
+                <button onClick={() => handleReview(purchase.id, 'reject')} disabled={busyId === purchase.id} className={buttonSecondarySm}>
                   Rechazar
                 </button>
               </>
