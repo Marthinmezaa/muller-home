@@ -2,24 +2,48 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getMyProperties } from '@/lib/api';
+import { getMe, getMyProperties, getQuota } from '@/lib/api';
 import { PROPERTY_STATUS_LABELS, type Property } from '@/lib/types';
 
 export default function PanelPage() {
   const [properties, setProperties] = useState<Property[] | null>(null);
   const [error, setError] = useState(false);
+  const [quota, setQuota] = useState<number | null>(null);
 
   useEffect(() => {
     getMyProperties()
       .then(setProperties)
       .catch(() => setError(true));
+    // Cupo disponible solo tiene sentido para quien publica propiedades — un
+    // super_admin no compra paquetes, así que getQuota() le daría siempre 0.
+    getMe().then((me) => {
+      if (me?.role === 'ADVISOR' || me?.role === 'FRANCHISE_ADMIN') {
+        getQuota().then(setQuota).catch(() => {});
+      }
+    });
   }, []);
 
   return (
     <div className="flex flex-col gap-4">
-      <Link href="/panel/propiedades/nueva" className="w-fit rounded bg-brand-navy px-4 py-2 text-sm text-white">
-        Cargar propiedad
-      </Link>
+      <div className="flex items-center gap-3">
+        <Link href="/panel/propiedades/nueva" className="w-fit rounded bg-brand-navy px-4 py-2 text-sm text-white">
+          Cargar propiedad
+        </Link>
+        {quota !== null && (
+          <p className="text-sm opacity-70">
+            Cupo disponible: <span className="font-medium opacity-100">{quota}</span>{' '}
+            {quota === 1 ? 'propiedad' : 'propiedades'}
+            {quota === 0 && (
+              <>
+                {' — '}
+                <Link href="/panel/comprar" className="text-brand-navy underline dark:text-brand-gold">
+                  comprar más
+                </Link>
+              </>
+            )}
+          </p>
+        )}
+      </div>
 
       {error && <p className="text-sm text-red-600">No se pudieron cargar tus propiedades.</p>}
       {!error && !properties && <p className="opacity-70">Cargando…</p>}
