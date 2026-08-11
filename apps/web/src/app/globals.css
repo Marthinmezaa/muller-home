@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
+/* Identidad visual provisoria de Muller Producciones (docs/brand/) — base
+   hasta que se defina la identidad definitiva de Muller Home en Fase 2. */
+@theme {
+  --color-brand-navy: #3b3a72;
+  --color-brand-gold: #f5c518;
+  --color-brand-ink: #1a1a1a;
+  --color-brand-cloud: #f2f2f2;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: var(--color-brand-cloud);
+  --foreground: var(--color-brand-ink);
 }
 
 @theme inline {

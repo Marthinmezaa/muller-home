@@ -39,7 +39,7 @@ export default function PanelEquipoPage() {
       <button
         onClick={handleInvite}
         disabled={inviting}
-        className="w-fit rounded bg-[#3B3A72] px-4 py-2 text-sm text-white disabled:opacity-50"
+        className="w-fit rounded bg-brand-navy px-4 py-2 text-sm text-white disabled:opacity-50"
       >
         {inviting ? 'Generando…' : 'Invitar asesor'}
       </button>

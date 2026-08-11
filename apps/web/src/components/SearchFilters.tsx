@@ -63,7 +63,7 @@ export function SearchFilters({ filters }: { filters: Filters }) {
       />
       <button
         type="submit"
-        className="col-span-2 rounded bg-[#3B3A72] px-4 py-2 text-white sm:col-span-1 md:col-span-6"
+        className="col-span-2 rounded bg-brand-navy px-4 py-2 text-white sm:col-span-1 md:col-span-6"
       >
         Buscar
       </button>

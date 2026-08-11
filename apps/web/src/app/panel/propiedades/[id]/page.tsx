@@ -79,7 +79,7 @@ export default function EditarPropiedadPage() {
 
       <div className="flex flex-wrap gap-2">
         {property.status === 'DRAFT' && (
-          <button onClick={() => runAction(() => publishProperty(property.id))} className="rounded bg-[#3B3A72] px-3 py-1.5 text-sm text-white">
+          <button onClick={() => runAction(() => publishProperty(property.id))} className="rounded bg-brand-navy px-3 py-1.5 text-sm text-white">
             Publicar
           </button>
         )}
@@ -94,7 +94,7 @@ export default function EditarPropiedadPage() {
           </>
         )}
         {property.status === 'PAUSED' && (
-          <button onClick={() => runAction(() => reactivateProperty(property.id))} className="rounded bg-[#3B3A72] px-3 py-1.5 text-sm text-white">
+          <button onClick={() => runAction(() => reactivateProperty(property.id))} className="rounded bg-brand-navy px-3 py-1.5 text-sm text-white">
             Reactivar
           </button>
         )}
