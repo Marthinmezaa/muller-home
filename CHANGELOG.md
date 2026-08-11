@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.14.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.13.0...muller-home-v0.14.0) (2026-08-11)
+
+
+### Features
+
+* aplicar la paleta de marca e incorporar el logo al frontend ([d0a7120](https://github.com/Marthinmezaa/muller-home/commit/d0a71203ebc6043f1ff1097053c8e6e91653e1fb))
+* aplicar la paleta de marca e incorporar el logo al frontend ([cbc21ad](https://github.com/Marthinmezaa/muller-home/commit/cbc21ad570de3d303f5fa56f313a4a280d517a1f))
+
 ## [0.13.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.12.0...muller-home-v0.13.0) (2026-08-11)
 
 
