@@ -2,6 +2,7 @@ import type {
   DeletionRequest,
   FranchiseMember,
   Lead,
+  MyPurchase,
   Package,
   PackageInput,
   PackagePurchase,
@@ -315,3 +316,41 @@ async function reviewPurchase(id: string, action: 'approve' | 'reject'): Promise
 
 export const approvePurchase = (id: string) => reviewPurchase(id, 'approve');
 export const rejectPurchase = (id: string) => reviewPurchase(id, 'reject');
+
+// --- Panel de asesor/franquicia: comprar paquete ---
+
+export async function getMyPurchases(): Promise<MyPurchase[]> {
+  const res = await fetch(`${API_URL}/packages/purchases/mine`, { credentials: 'include' });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudieron cargar tus compras');
+  }
+  return res.json();
+}
+
+export async function purchasePackage(packageId: string, proof: File): Promise<MyPurchase> {
+  const formData = new FormData();
+  formData.append('proof', proof);
+  const res = await fetch(`${API_URL}/packages/${packageId}/purchases`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo registrar la compra');
+  }
+  return res.json();
+}
+
+export async function resendPurchaseProof(purchaseId: string, proof: File): Promise<MyPurchase> {
+  const formData = new FormData();
+  formData.append('proof', proof);
+  const res = await fetch(`${API_URL}/packages/purchases/${purchaseId}/proof`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo reenviar el comprobante');
+  }
+  return res.json();
+}
