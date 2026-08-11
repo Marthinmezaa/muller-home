@@ -15,7 +15,7 @@ export default function NuevaPropiedadPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">Nueva propiedad</h1>
+      <h1 className="text-2xl font-bold tracking-tight">Nueva propiedad</h1>
       <PropertyForm onSubmit={handleSubmit} submitLabel="Crear" />
     </div>
   );

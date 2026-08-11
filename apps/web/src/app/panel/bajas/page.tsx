@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { approveDeletionRequest, getPendingDeletionRequests, rejectDeletionRequest } from '@/lib/api';
 import type { DeletionRequest } from '@/lib/types';
+import { buttonPrimarySm, buttonSecondarySm, card } from '@/lib/ui';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('es-PY', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -44,7 +45,7 @@ export default function PanelBajasPage() {
   return (
     <div className="flex flex-col gap-2">
       {requests.map((request) => (
-        <div key={request.id} className="flex items-center justify-between rounded border border-black/10 p-4 dark:border-white/15">
+        <div key={request.id} className={`flex items-center justify-between ${card}`}>
           <div>
             <p className="font-medium">{request.property.title}</p>
             <p className="text-xs opacity-70">
@@ -52,18 +53,10 @@ export default function PanelBajasPage() {
             </p>
           </div>
           <div className="flex gap-2">
-            <button
-              onClick={() => handleReview(request.id, 'approve')}
-              disabled={busyId === request.id}
-              className="rounded bg-brand-navy px-3 py-1 text-sm text-white disabled:opacity-50"
-            >
+            <button onClick={() => handleReview(request.id, 'approve')} disabled={busyId === request.id} className={buttonPrimarySm}>
               Aprobar
             </button>
-            <button
-              onClick={() => handleReview(request.id, 'reject')}
-              disabled={busyId === request.id}
-              className="rounded border border-black/10 px-3 py-1 text-sm dark:border-white/15"
-            >
+            <button onClick={() => handleReview(request.id, 'reject')} disabled={busyId === request.id} className={buttonSecondarySm}>
               Rechazar
             </button>
           </div>

@@ -1,4 +1,5 @@
 import { AcceptInviteForm } from '@/components/AcceptInviteForm';
+import { card } from '@/lib/ui';
 
 export default async function AceptarInvitacionPage({
   searchParams,
@@ -9,9 +10,11 @@ export default async function AceptarInvitacionPage({
 
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Completar registro</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">Completar registro</h1>
       {token ? (
-        <AcceptInviteForm token={token} />
+        <div className={card}>
+          <AcceptInviteForm token={token} />
+        </div>
       ) : (
         <p className="text-sm text-red-600">Falta el token de invitación en el link.</p>
       )}

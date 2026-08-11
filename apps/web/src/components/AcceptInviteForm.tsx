@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { acceptInvite } from '@/lib/api';
+import { buttonPrimary, input } from '@/lib/ui';
 
 export function AcceptInviteForm({ token }: { token: string }) {
   const router = useRouter();
@@ -26,35 +27,30 @@ export function AcceptInviteForm({ token }: { token: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <label className="sr-only" htmlFor="fullName">
+        Nombre completo
+      </label>
+      <input id="fullName" required placeholder="Nombre completo" value={fullName} onChange={(event) => setFullName(event.target.value)} className={input} />
+
+      <label className="sr-only" htmlFor="email">
+        Email
+      </label>
+      <input id="email" required type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} className={input} />
+
+      <label className="sr-only" htmlFor="password">
+        Contraseña
+      </label>
       <input
-        required
-        placeholder="Nombre completo"
-        value={fullName}
-        onChange={(event) => setFullName(event.target.value)}
-        className="rounded border border-black/10 px-3 py-2 dark:border-white/15"
-      />
-      <input
-        required
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        className="rounded border border-black/10 px-3 py-2 dark:border-white/15"
-      />
-      <input
+        id="password"
         required
         type="password"
         placeholder="Contraseña"
         minLength={8}
         value={password}
         onChange={(event) => setPassword(event.target.value)}
-        className="rounded border border-black/10 px-3 py-2 dark:border-white/15"
+        className={input}
       />
-      <button
-        type="submit"
-        disabled={status === 'sending'}
-        className="rounded bg-brand-navy px-4 py-2 text-white disabled:opacity-50"
-      >
+      <button type="submit" disabled={status === 'sending'} className={buttonPrimary}>
         {status === 'sending' ? 'Registrando…' : 'Crear cuenta'}
       </button>
       {status === 'error' && <p className="text-sm text-red-600">{error}</p>}

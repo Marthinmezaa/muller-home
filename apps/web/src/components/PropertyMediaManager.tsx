@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { deletePropertyMedia, reorderPropertyMedia, uploadPropertyMedia } from '@/lib/api';
 import type { PropertyMedia } from '@/lib/types';
+import { badge, buttonSecondary } from '@/lib/ui';
 
 export function PropertyMediaManager({
   propertyId,
@@ -77,7 +78,7 @@ export function PropertyMediaManager({
 
   return (
     <div className="flex flex-col gap-3">
-      <label className="w-fit cursor-pointer rounded border border-black/10 px-4 py-2 text-sm dark:border-white/15">
+      <label className={`w-fit cursor-pointer ${buttonSecondary}`}>
         {uploading ? `Subiendo ${uploading.current}/${uploading.total}…` : 'Agregar fotos/video'}
         <input
           type="file"
@@ -99,22 +100,19 @@ export function PropertyMediaManager({
               onDragStart={() => setDragIndex(index)}
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => handleDrop(index)}
-              className="group relative aspect-square cursor-move overflow-hidden rounded border border-black/10 bg-black/5 dark:border-white/15 dark:bg-white/5"
+              className="group relative aspect-square cursor-move overflow-hidden rounded-lg border border-black/10 bg-black/5 transition-shadow hover:shadow-md dark:border-white/15 dark:bg-white/5"
             >
               {item.type === 'PHOTO' ? (
                 <Image src={item.url} alt="" fill className="object-cover" unoptimized />
               ) : (
                 <video src={item.url} className="h-full w-full object-cover" />
               )}
-              {item.isCover && (
-                <span className="absolute top-1 left-1 rounded bg-black/80 px-1.5 py-0.5 text-[10px] font-medium text-white">
-                  Portada
-                </span>
-              )}
+              {item.isCover && <span className={`absolute top-1.5 left-1.5 ${badge} bg-black/80 text-white`}>Portada</span>}
               <button
                 type="button"
+                aria-label="Borrar foto"
                 onClick={() => handleDelete(item.id)}
-                className="absolute top-1 right-1 rounded bg-black/80 px-1.5 py-0.5 text-xs text-white opacity-0 transition group-hover:opacity-100"
+                className="absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/80 text-xs text-white opacity-0 transition group-hover:opacity-100"
               >
                 ✕
               </button>

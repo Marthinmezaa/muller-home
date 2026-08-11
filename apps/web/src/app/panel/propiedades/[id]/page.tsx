@@ -14,6 +14,7 @@ import {
   updateProperty,
 } from '@/lib/api';
 import { PROPERTY_STATUS_LABELS, type Property, type PropertyInput } from '@/lib/types';
+import { badgeNeutral, buttonDanger, buttonPrimarySm, buttonSecondarySm } from '@/lib/ui';
 
 type State = { kind: 'loading' } | { kind: 'error'; message: string } | { kind: 'ready'; property: Property };
 
@@ -71,34 +72,32 @@ export default function EditarPropiedadPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{property.title || 'Editar propiedad'}</h1>
-        <span className="rounded bg-black/5 px-2 py-1 text-xs font-medium dark:bg-white/10">
-          {PROPERTY_STATUS_LABELS[property.status]}
-        </span>
+        <h1 className="text-2xl font-bold tracking-tight">{property.title || 'Editar propiedad'}</h1>
+        <span className={badgeNeutral}>{PROPERTY_STATUS_LABELS[property.status]}</span>
       </div>
 
       <div className="flex flex-wrap gap-2">
         {property.status === 'DRAFT' && (
-          <button onClick={() => runAction(() => publishProperty(property.id))} className="rounded bg-brand-navy px-3 py-1.5 text-sm text-white">
+          <button onClick={() => runAction(() => publishProperty(property.id))} className={buttonPrimarySm}>
             Publicar
           </button>
         )}
         {property.status === 'PUBLISHED' && (
           <>
-            <button onClick={() => runAction(() => pauseProperty(property.id))} className="rounded border border-black/10 px-3 py-1.5 text-sm dark:border-white/15">
+            <button onClick={() => runAction(() => pauseProperty(property.id))} className={buttonSecondarySm}>
               Pausar
             </button>
-            <button onClick={() => runAction(() => closeProperty(property.id))} className="rounded border border-black/10 px-3 py-1.5 text-sm dark:border-white/15">
+            <button onClick={() => runAction(() => closeProperty(property.id))} className={buttonSecondarySm}>
               {closeLabel}
             </button>
           </>
         )}
         {property.status === 'PAUSED' && (
-          <button onClick={() => runAction(() => reactivateProperty(property.id))} className="rounded bg-brand-navy px-3 py-1.5 text-sm text-white">
+          <button onClick={() => runAction(() => reactivateProperty(property.id))} className={buttonPrimarySm}>
             Reactivar
           </button>
         )}
-        <button onClick={handleRequestDeletion} className="rounded border border-red-600/30 px-3 py-1.5 text-sm text-red-600">
+        <button onClick={handleRequestDeletion} className={buttonDanger}>
           Pedir baja
         </button>
       </div>
