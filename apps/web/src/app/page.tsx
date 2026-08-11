@@ -21,7 +21,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Muller Home</h1>
+      <h1 className="text-2xl font-semibold">Buscá tu próxima propiedad</h1>
       <SearchFilters filters={filters} />
 
       <div className="h-96 overflow-hidden rounded-lg border border-black/10 dark:border-white/15">
