@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.14.1](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.14.0...muller-home-v0.14.1) (2026-08-11)
+
+
+### Bug Fixes
+
+* corregir hallazgos del code review sobre la paleta de marca ([3432e8d](https://github.com/Marthinmezaa/muller-home/commit/3432e8d1349b20d3d64c43248100d07af52aedc0))
+* corregir hallazgos del code review sobre la paleta de marca ([0ce7378](https://github.com/Marthinmezaa/muller-home/commit/0ce73780a7e67e930515367d06b800a9ec5050bc))
+
 ## [0.14.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.13.0...muller-home-v0.14.0) (2026-08-11)
 
 
