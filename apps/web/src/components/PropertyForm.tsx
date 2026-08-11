@@ -118,7 +118,7 @@ export function PropertyForm({
         </div>
       </div>
 
-      <button type="submit" disabled={status === 'sending'} className="w-fit rounded bg-[#3B3A72] px-4 py-2 text-white disabled:opacity-50">
+      <button type="submit" disabled={status === 'sending'} className="w-fit rounded bg-brand-navy px-4 py-2 text-white disabled:opacity-50">
         {status === 'sending' ? 'Guardando…' : submitLabel}
       </button>
       {error && <p className="text-sm text-red-600">{error}</p>}

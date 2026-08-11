@@ -9,7 +9,7 @@ function formatDate(iso: string): string {
 }
 
 const STATUS_STYLES: Record<PurchaseStatus, string> = {
-  PENDING: 'bg-[#F5C518]/20 text-[#8a6b0a]',
+  PENDING: 'bg-brand-gold/20 text-[#8a6b0a]',
   APPROVED: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
   REJECTED: 'bg-red-500/15 text-red-700 dark:text-red-400',
 };
@@ -29,7 +29,7 @@ function ProofForm({ busy, onSubmit }: { busy: boolean; onSubmit: (file: File) =
       <button
         disabled={!file || busy}
         onClick={() => file && onSubmit(file)}
-        className="rounded bg-[#3B3A72] px-3 py-1 text-sm text-white disabled:opacity-50"
+        className="rounded bg-brand-navy px-3 py-1 text-sm text-white disabled:opacity-50"
       >
         {busy ? 'Enviando…' : 'Confirmar'}
       </button>
@@ -140,7 +140,7 @@ export default function PanelComprarPage() {
                 {resendingId === purchase.id ? (
                   <ProofForm busy={busy} onSubmit={(file) => handleResend(purchase.id, file)} />
                 ) : (
-                  <button onClick={() => setResendingId(purchase.id)} className="w-fit text-sm text-[#3B3A72] underline">
+                  <button onClick={() => setResendingId(purchase.id)} className="w-fit text-sm text-brand-navy underline">
                     Reenviar comprobante
                   </button>
                 )}

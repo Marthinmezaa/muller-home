@@ -44,7 +44,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={status === 'sending'}
-          className="rounded bg-[#3B3A72] px-4 py-2 text-white disabled:opacity-50"
+          className="rounded bg-brand-navy px-4 py-2 text-white disabled:opacity-50"
         >
           {status === 'sending' ? 'Ingresando…' : 'Ingresar'}
         </button>

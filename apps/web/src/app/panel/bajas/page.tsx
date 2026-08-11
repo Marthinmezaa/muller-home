@@ -55,7 +55,7 @@ export default function PanelBajasPage() {
             <button
               onClick={() => handleReview(request.id, 'approve')}
               disabled={busyId === request.id}
-              className="rounded bg-[#3B3A72] px-3 py-1 text-sm text-white disabled:opacity-50"
+              className="rounded bg-brand-navy px-3 py-1 text-sm text-white disabled:opacity-50"
             >
               Aprobar
             </button>

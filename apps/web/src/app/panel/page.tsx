@@ -17,7 +17,7 @@ export default function PanelPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Link href="/panel/propiedades/nueva" className="w-fit rounded bg-[#3B3A72] px-4 py-2 text-sm text-white">
+      <Link href="/panel/propiedades/nueva" className="w-fit rounded bg-brand-navy px-4 py-2 text-sm text-white">
         Cargar propiedad
       </Link>
 
