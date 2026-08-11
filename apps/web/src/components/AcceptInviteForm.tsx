@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { acceptInvite } from '@/lib/api';
 import { buttonPrimary, input } from '@/lib/ui';
+import { Field } from './Field';
 
 export function AcceptInviteForm({ token }: { token: string }) {
   const router = useRouter();
@@ -27,29 +28,26 @@ export function AcceptInviteForm({ token }: { token: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <label className="sr-only" htmlFor="fullName">
-        Nombre completo
-      </label>
-      <input id="fullName" required placeholder="Nombre completo" value={fullName} onChange={(event) => setFullName(event.target.value)} className={input} />
+      <Field label="Nombre completo" htmlFor="fullName">
+        <input id="fullName" required placeholder="Nombre completo" value={fullName} onChange={(event) => setFullName(event.target.value)} className={input} />
+      </Field>
 
-      <label className="sr-only" htmlFor="email">
-        Email
-      </label>
-      <input id="email" required type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} className={input} />
+      <Field label="Email" htmlFor="email">
+        <input id="email" required type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} className={input} />
+      </Field>
 
-      <label className="sr-only" htmlFor="password">
-        Contraseña
-      </label>
-      <input
-        id="password"
-        required
-        type="password"
-        placeholder="Contraseña"
-        minLength={8}
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-        className={input}
-      />
+      <Field label="Contraseña" htmlFor="password">
+        <input
+          id="password"
+          required
+          type="password"
+          placeholder="Contraseña"
+          minLength={8}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          className={input}
+        />
+      </Field>
       <button type="submit" disabled={status === 'sending'} className={buttonPrimary}>
         {status === 'sending' ? 'Registrando…' : 'Crear cuenta'}
       </button>

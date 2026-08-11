@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { OPERATION_TYPE_LABELS, PROPERTY_TYPE_LABELS, type PropertyInput } from '@/lib/types';
 import { buttonPrimary, input } from '@/lib/ui';
+import { Field } from './Field';
 
 // Leaflet toca `window` al importarse — mismo motivo que PropertyMapLoader.tsx,
 // pero acá no hace falta un archivo aparte porque PropertyForm ya es Client Component.
@@ -11,17 +12,6 @@ const PropertyLocationPicker = dynamic(
   () => import('./PropertyLocationPicker').then((m) => m.PropertyLocationPicker),
   { ssr: false, loading: () => <div className="flex h-full items-center justify-center text-sm opacity-50">Cargando mapa…</div> },
 );
-
-function Field({ label, htmlFor, children }: { label: string; htmlFor: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="sr-only" htmlFor={htmlFor}>
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-}
 
 export function PropertyForm({
   initial,

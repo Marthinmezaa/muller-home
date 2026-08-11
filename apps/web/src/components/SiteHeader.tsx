@@ -5,7 +5,10 @@ import { accentText } from '@/lib/ui';
 /** Header de marca, presente en toda la app (portal público y panel) — ver root layout.tsx. */
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-20 border-b border-black/10 bg-background/80 backdrop-blur-md dark:border-white/15">
+    // z-[1001]: Leaflet pinea sus propios controles (.leaflet-top/.leaflet-bottom)
+    // a z-index 1000 — con menos que eso, el zoom control del mapa (PropertyMap,
+    // PropertyLocationPicker) queda por encima del header sticky al scrollear.
+    <header className="sticky top-0 z-[1001] border-b border-black/10 bg-background/80 backdrop-blur-md dark:border-white/15">
       <div className="mx-auto flex w-full max-w-6xl items-center gap-2 p-4">
         <Link href="/" className="flex items-center gap-2">
           <Image
