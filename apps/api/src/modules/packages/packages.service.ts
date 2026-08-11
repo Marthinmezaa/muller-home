@@ -116,7 +116,11 @@ export class PackagesService {
   }
 
   findMyPurchases(userId: string) {
-    return this.prisma.packagePurchase.findMany({ where: { buyerId: userId }, orderBy: { createdAt: 'desc' } });
+    return this.prisma.packagePurchase.findMany({
+      where: { buyerId: userId },
+      orderBy: { createdAt: 'desc' },
+      include: { package: true },
+    });
   }
 
   findAllPurchases() {

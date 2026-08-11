@@ -45,6 +45,11 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
           <Link href="/panel/leads" className={pathname === '/panel/leads' ? 'text-[#3B3A72]' : 'opacity-70'}>
             Leads
           </Link>
+          {(user.role === 'FRANCHISE_ADMIN' || (user.role === 'ADVISOR' && !user.franchiseId)) && (
+            <Link href="/panel/comprar" className={pathname === '/panel/comprar' ? 'text-[#3B3A72]' : 'opacity-70'}>
+              Comprar paquete
+            </Link>
+          )}
           {user.role === 'FRANCHISE_ADMIN' && (
             <>
               <Link href="/panel/equipo" className={pathname === '/panel/equipo' ? 'text-[#3B3A72]' : 'opacity-70'}>

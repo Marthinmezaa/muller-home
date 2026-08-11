@@ -138,6 +138,9 @@ export interface PackagePurchase {
   buyer: { fullName: string; email: string };
 }
 
+/** Fila de GET /packages/purchases/mine — sin `buyer` (sos vos), para el panel de asesor/franquicia. */
+export type MyPurchase = Omit<PackagePurchase, 'buyer'>;
+
 /** Campos del formulario de alta de paquete — mismos que CreatePackageDto de la API. */
 export interface PackageInput {
   name: string;
