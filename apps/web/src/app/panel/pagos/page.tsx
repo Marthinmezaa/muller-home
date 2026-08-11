@@ -9,7 +9,7 @@ function formatDate(iso: string): string {
 }
 
 const STATUS_STYLES: Record<PurchaseStatus, string> = {
-  PENDING: 'bg-brand-gold/20 text-[#8a6b0a]',
+  PENDING: 'bg-brand-gold/20 text-[#8a6b0a] dark:text-brand-gold',
   APPROVED: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
   REJECTED: 'bg-red-500/15 text-red-700 dark:text-red-400',
 };

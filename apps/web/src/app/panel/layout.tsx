@@ -36,36 +36,36 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-6">
+    <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-6">
       <header className="flex items-center justify-between border-b border-black/10 pb-4 dark:border-white/15">
         <nav className="flex gap-4 text-sm font-medium">
-          <Link href="/panel" className={pathname === '/panel' ? 'text-brand-navy' : 'opacity-70'}>
+          <Link href="/panel" className={pathname === '/panel' ? 'text-brand-navy dark:text-brand-gold' : 'opacity-70'}>
             Mis propiedades
           </Link>
-          <Link href="/panel/leads" className={pathname === '/panel/leads' ? 'text-brand-navy' : 'opacity-70'}>
+          <Link href="/panel/leads" className={pathname === '/panel/leads' ? 'text-brand-navy dark:text-brand-gold' : 'opacity-70'}>
             Leads
           </Link>
           {(user.role === 'FRANCHISE_ADMIN' || (user.role === 'ADVISOR' && !user.franchiseId)) && (
-            <Link href="/panel/comprar" className={pathname === '/panel/comprar' ? 'text-brand-navy' : 'opacity-70'}>
+            <Link href="/panel/comprar" className={pathname === '/panel/comprar' ? 'text-brand-navy dark:text-brand-gold' : 'opacity-70'}>
               Comprar paquete
             </Link>
           )}
           {user.role === 'FRANCHISE_ADMIN' && (
             <>
-              <Link href="/panel/equipo" className={pathname === '/panel/equipo' ? 'text-brand-navy' : 'opacity-70'}>
+              <Link href="/panel/equipo" className={pathname === '/panel/equipo' ? 'text-brand-navy dark:text-brand-gold' : 'opacity-70'}>
                 Equipo
               </Link>
-              <Link href="/panel/bajas" className={pathname === '/panel/bajas' ? 'text-brand-navy' : 'opacity-70'}>
+              <Link href="/panel/bajas" className={pathname === '/panel/bajas' ? 'text-brand-navy dark:text-brand-gold' : 'opacity-70'}>
                 Bajas
               </Link>
             </>
           )}
           {user.role === 'SUPER_ADMIN' && (
             <>
-              <Link href="/panel/pagos" className={pathname === '/panel/pagos' ? 'text-brand-navy' : 'opacity-70'}>
+              <Link href="/panel/pagos" className={pathname === '/panel/pagos' ? 'text-brand-navy dark:text-brand-gold' : 'opacity-70'}>
                 Pagos
               </Link>
-              <Link href="/panel/catalogo" className={pathname === '/panel/catalogo' ? 'text-brand-navy' : 'opacity-70'}>
+              <Link href="/panel/catalogo" className={pathname === '/panel/catalogo' ? 'text-brand-navy dark:text-brand-gold' : 'opacity-70'}>
                 Catálogo
               </Link>
             </>
@@ -79,6 +79,6 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
         </div>
       </header>
       {children}
-    </div>
+    </main>
   );
 }

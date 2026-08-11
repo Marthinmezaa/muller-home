@@ -8,7 +8,7 @@ export function SiteHeader() {
       <div className="mx-auto flex w-full max-w-6xl items-center gap-2 p-4">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/brand/owl-mark.png" alt="" width={32} height={32} className="rounded-full" />
-          <span className="text-lg font-semibold text-brand-navy">Muller Home</span>
+          <span className="text-lg font-semibold text-brand-navy dark:text-brand-gold">Muller Home</span>
         </Link>
       </div>
     </header>
