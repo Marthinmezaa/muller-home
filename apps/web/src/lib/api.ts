@@ -341,6 +341,15 @@ export async function purchasePackage(packageId: string, proof: File): Promise<M
   return res.json();
 }
 
+export async function getQuota(): Promise<number> {
+  const res = await fetch(`${API_URL}/packages/quota`, { credentials: 'include' });
+  if (!res.ok) {
+    throw await apiError(res, 'No se pudo cargar el cupo disponible');
+  }
+  const { available } = await res.json();
+  return available;
+}
+
 export async function resendPurchaseProof(purchaseId: string, proof: File): Promise<MyPurchase> {
   const formData = new FormData();
   formData.append('proof', proof);
