@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.14.1...muller-home-v0.15.0) (2026-08-11)
+
+
+### Features
+
+* mostrar cupo disponible en el home del panel ([d344a65](https://github.com/Marthinmezaa/muller-home/commit/d344a65f5d77d62ada0f01dd329708ab93b2e6b2))
+* mostrar cupo disponible en el home del panel ([1c9f611](https://github.com/Marthinmezaa/muller-home/commit/1c9f611b707dec0089295b02880829f7e76ce403))
+
 ## [0.14.1](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.14.0...muller-home-v0.14.1) (2026-08-11)
 
 
