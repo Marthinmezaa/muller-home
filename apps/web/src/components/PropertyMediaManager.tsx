@@ -110,7 +110,7 @@ export function PropertyMediaManager({
               {item.isCover && <span className={`absolute top-1.5 left-1.5 ${badge} bg-black/80 text-white`}>Portada</span>}
               <button
                 type="button"
-                aria-label="Borrar foto"
+                aria-label={item.type === 'VIDEO' ? 'Borrar video' : 'Borrar foto'}
                 onClick={() => handleDelete(item.id)}
                 className="absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/80 text-xs text-white opacity-0 transition group-hover:opacity-100"
               >

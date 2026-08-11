@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createFranchiseInvite, getFranchiseMembers } from '@/lib/api';
 import type { FranchiseMember } from '@/lib/types';
 import { badgeNeutral, buttonPrimary, buttonSecondarySm, card } from '@/lib/ui';
+import { Field } from '@/components/Field';
 
 const ROLE_LABELS: Record<FranchiseMember['role'], string> = {
   ADVISOR: 'Asesor',
@@ -43,10 +44,9 @@ export default function PanelEquipoPage() {
 
       {inviteLink && (
         <div className={`flex items-center gap-2 text-sm ${card}`}>
-          <label className="sr-only" htmlFor="invite-link">
-            Link de invitación
-          </label>
-          <input id="invite-link" readOnly value={inviteLink} className="flex-1 bg-transparent outline-none" />
+          <Field label="Link de invitación" htmlFor="invite-link">
+            <input id="invite-link" readOnly value={inviteLink} className="flex-1 bg-transparent outline-none" />
+          </Field>
           <button onClick={() => navigator.clipboard.writeText(inviteLink)} className={buttonSecondarySm}>
             Copiar
           </button>

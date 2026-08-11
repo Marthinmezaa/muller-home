@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { login } from '@/lib/api';
 import { buttonPrimary, card, input } from '@/lib/ui';
+import { Field } from '@/components/Field';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,23 +27,21 @@ export default function LoginPage() {
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-6 p-6">
       <h1 className="text-2xl font-semibold tracking-tight">Iniciar sesión</h1>
       <form onSubmit={handleSubmit} className={`flex flex-col gap-3 ${card}`}>
-        <label className="sr-only" htmlFor="email">
-          Email
-        </label>
-        <input id="email" required type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} className={input} />
+        <Field label="Email" htmlFor="email">
+          <input id="email" required type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} className={input} />
+        </Field>
 
-        <label className="sr-only" htmlFor="password">
-          Contraseña
-        </label>
-        <input
-          id="password"
-          required
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          className={input}
-        />
+        <Field label="Contraseña" htmlFor="password">
+          <input
+            id="password"
+            required
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            className={input}
+          />
+        </Field>
         <button type="submit" disabled={status === 'sending'} className={buttonPrimary}>
           {status === 'sending' ? 'Ingresando…' : 'Ingresar'}
         </button>
