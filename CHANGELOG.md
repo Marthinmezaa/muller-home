@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.16.1](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.16.0...muller-home-v0.16.1) (2026-08-11)
+
+
+### Bug Fixes
+
+* corregir hallazgos del code review sobre el rediseno visual ([3508cd6](https://github.com/Marthinmezaa/muller-home/commit/3508cd66750fdfdb0ce0ec2998cfa6d88f05ca4f))
+* corregir hallazgos del code review sobre el rediseño visual ([0dac9ac](https://github.com/Marthinmezaa/muller-home/commit/0dac9acb6e78b3dd07d273801065b32113eb2e90))
+
 ## [0.16.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.15.0...muller-home-v0.16.0) (2026-08-11)
 
 
