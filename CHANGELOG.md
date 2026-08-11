@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.16.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.15.0...muller-home-v0.16.0) (2026-08-11)
+
+
+### Features
+
+* mejorar el craft visual del frontend sin tocar la marca ([5ab64dd](https://github.com/Marthinmezaa/muller-home/commit/5ab64dd39c591e4be9ae0a7973b9d27048e147a2))
+* mejorar el craft visual del frontend sin tocar la marca ([d63d54e](https://github.com/Marthinmezaa/muller-home/commit/d63d54e5b334dec624090904e0fe5b266b1cd15c))
+
 ## [0.15.0](https://github.com/Marthinmezaa/muller-home/compare/muller-home-v0.14.1...muller-home-v0.15.0) (2026-08-11)
 
 
